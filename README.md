@@ -6,11 +6,11 @@ Identifying galaxies, quasars and stars with machine learning: a new catalogue o
 These scripts explore galaxy/quasar/star classification from optical and infrared data using machine learning.
 
 SDSS_ML.py
-- This script is aimed at cleaning data, and also training, validating and testing models.
+- This script is aimed at cleaning data, and also training, validating and testing models using sources with spectra.
 
 SDSS_ML_analysis.py
 - This script is aimed at creating analysis plots using the data from spectroscopic sources.
 
 SDSS_ML_classifynew.py
-- This script classifies new sources, and makes plots assessing the output. 
+- This script classifies new sources without spectra, and makes plots assessing the output. 
 
