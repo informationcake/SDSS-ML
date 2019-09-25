@@ -20,3 +20,4 @@ SDSS_ML_knnplots.py
 SDSS_ML_classifynew.py
 - Classifies new sources without spectra, and makes plots assessing the output. 
 
+Our catalogue can be found and referenced under our DOI here: https://www.doi.org/10.5281/zenodo.3459294
