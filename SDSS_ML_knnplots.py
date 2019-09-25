@@ -44,8 +44,8 @@ from datashader.colors import *
 from SDSS_ML_analysis import load_obj, save_obj, prepare_classifications
 
 # list of functions:
+# knn_closest
 # get_nearest_neighbour_idx
-# get_knn_accuracy_MT
 # get_knn_accuracy_MT
 # get_knn_accuracy
 # plot_knn_f1scores
