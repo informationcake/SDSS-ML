@@ -25,7 +25,7 @@ SDSS_ML_classifynew.py
 SDSS_ML_UMAP.py
 - Runs UMAP on the spectroscopic and photometric datasets, and makes 2D plots.
 
-When using our work, please consider referencing our paper (in the usual way via the journal) and our catalogue via the DOI https://doi.org/10.5281/zenodo.3855160
+When using our work, please consider referencing our paper (in the usual way via the journal) and our catalogue via the DOI https://www.doi.org/10.5281/zenodo.3459293
 We have also created a DOI for our code, if you make use of it and wish to reference: https://doi.org/10.5281/zenodo.3855160
 
 Thanks for taking an interest in our work :)
