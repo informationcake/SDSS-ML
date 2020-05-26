@@ -19,7 +19,7 @@ import os, sys, glob
 import pandas as pd
 import numpy as np
 import matplotlib as mpl
-mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
+#mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import matplotlib.transforms as transforms
@@ -229,7 +229,7 @@ def classify_new_sources(datafile, feature_columns):
     df = df.reset_index(drop=True)
     print(' There are {0} rows'.format(len(df)))
     print(' Calculating resolved feature for all rows - {0}'.format(datetime.datetime.utcnow()))
-    df['resolvedr'] = np.sqrt((df.psf_r_corr - df.cmod_r_corr)**2)
+    df['resolvedr'] = np.sqrt((df.psf_r - df.cmod_r)**2)
     print(' Predicting classes for all rows - {0}'.format(datetime.datetime.utcnow()))
     classes = rf_pipeline.predict(df[feature_columns])
     probabilities = rf_pipeline.predict_proba(df[feature_columns])
@@ -257,14 +257,14 @@ def classify_new_sources(datafile, feature_columns):
     # histograms
 def plot_new_hist(df, df_g, df_q, df_s):
     print('Plotting histograms... New-sources-hist * .pdf')
-    bins_r = np.linspace(0,27,150)
-    bins_p = np.linspace(0,1,100)
+    bins_r = np.linspace(8,28,150)
+    bins_p = np.linspace(0,1,200)
 
     # plot histogram over psf_r magnitude
-    xrg, yg = histvals(df_g.psf_r_corr, bins=bins_r, cumulative=False, density=False)
-    xrq, yq = histvals(df_q.psf_r_corr, bins=bins_r, cumulative=False, density=False)
-    xrs, ys = histvals(df_s.psf_r_corr, bins=bins_r, cumulative=False, density=False)
-    fig = plt.figure()
+    xrg, yg = histvals(df_g.psf_r, bins=bins_r, cumulative=False, density=False)
+    xrq, yq = histvals(df_q.psf_r, bins=bins_r, cumulative=False, density=False)
+    xrs, ys = histvals(df_s.psf_r, bins=bins_r, cumulative=False, density=False)
+    fig = plt.figure(figsize=(5,3.5))
     plt.plot(xrg, yg, label='Predicted galaxies', color=galaxy_c, linewidth=linewidth)
     plt.plot(xrq, yq, label='Predicted quasars', color=quasar_c, linewidth=linewidth)
     plt.plot(xrs, ys, label='Predicted stars', color=star_c, linewidth=linewidth)
@@ -272,16 +272,16 @@ def plot_new_hist(df, df_g, df_q, df_s):
     plt.plot(xrg, yg+yq+ys, label='All photometric sources', color='black', linewidth=0.2, ls='--')
 
     # Spectra sources
-    x1, y1 = histvals(df[df['class']=='GALAXY'].psf_r_corr, bins=bins_r, cumulative=False, density=False)
+    x1, y1 = histvals(df[df['class']=='GALAXY'].psf_r, bins=bins_r, cumulative=False, density=False)
     plt.plot(x1, y1, label='Galaxies with spectra', ls='--', linewidth=0.5, color=galaxy_c)
-    x1, y1 = histvals(df[df['class']=='QSO'].psf_r_corr, bins=bins_r, cumulative=False, density=False)
+    x1, y1 = histvals(df[df['class']=='QSO'].psf_r, bins=bins_r, cumulative=False, density=False)
     plt.plot(x1, y1, label='Quasars with spectra', ls='--', linewidth=0.5, color=quasar_c)
-    x1, y1 = histvals(df[df['class']=='STAR'].psf_r_corr, bins=bins_r, cumulative=False, density=False)
+    x1, y1 = histvals(df[df['class']=='STAR'].psf_r, bins=bins_r, cumulative=False, density=False)
     plt.plot(x1, y1, label='Stars with spectra', ls='--', linewidth=0.5, color=star_c)
 
     plt.xticks(np.arange(min(bins_r), max(bins_r)+1, step=2))
     plt.gca().xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
-    plt.xlim(0,27)
+    plt.xlim(8,28)
     plt.xlabel('PSF r magnitude')
     plt.ylabel('Number of sources')
     plt.yscale('log')
@@ -291,6 +291,10 @@ def plot_new_hist(df, df_g, df_q, df_s):
     plt.tight_layout()
     plt.savefig('New-sources-hist-psfr.pdf')
     plt.clf()
+
+
+
+    # ------ new plot ------
 
 
 
@@ -325,15 +329,15 @@ def plot_new_hist(df, df_g, df_q, df_s):
 
     # plot cumulative normalised histogram over probabilities
     plt.sca(axs[1])
-    print(bins_p)
+    #print(bins_p)
     xpg_cum, yg_prob_cum = histvals(df_g.prob_g, bins=bins_p, cumulative=True, density=True)
     xpq_cum, yq_prob_cum = histvals(df_q.prob_q, bins=bins_p, cumulative=True, density=True)
     xps_cum, ys_prob_cum = histvals(df_s.prob_s, bins=bins_p, cumulative=True, density=True)
     plt.plot(xpg_cum, yg_prob_cum, label='Predicted galaxies', color=galaxy_c, linewidth=linewidth)
     plt.plot(xpq_cum, yq_prob_cum, label='Predicted quasars', color=quasar_c, linewidth=linewidth)
     plt.plot(xps_cum, ys_prob_cum, label='Predicted stars', color=star_c, linewidth=linewidth)
-    print(xpg_cum)
-    print( len(bins_p), len(xpg_cum) )
+    #print(xpg_cum)
+    #print( len(bins_p), len(xpg_cum) )
     # Plot spectrosopically observed correct sources
     x1, y1 = histvals(df.loc[correct_galaxy.index].prob_g, bins=bins_p, cumulative=True, density=True)
     plt.plot(x1, y1, label='Correct galaxies with spectra', ls='--', linewidth=0.5, color=galaxy_c)
@@ -374,7 +378,7 @@ def plot_new_maghist(df_g, df_q, df_s):
     # define labels for the x axis
     xlabels = ['u', 'g', 'r', 'i', 'z', 'w1', 'w2', 'w3', 'w4'] # in case we want more concise labels.
     # Only keep magnitude features to plot (remove resolvedr feature):
-    mag_vals = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4']
+    mag_vals = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4']
     f, axs = plt.subplots(1, 9, figsize=(16,4), sharey=True, sharex=False)
 
     # UGRIZ
@@ -419,6 +423,12 @@ def plot_new_maghist(df_g, df_q, df_s):
         # ticks on both sides of plot
         plt.tick_params(axis='y', which='both', right=True)
         ax.minorticks_on()
+        if mag_val!='w4': # w4 last label can exist, w1 w2 w3 cannot.
+            #labels = plt.gca().get_xticks().tolist()
+            #print(labels)
+            #labels[-1] = ' ' # last label overlaps, set blank
+            #print(labels)
+            plt.gca().set_xticklabels([0,5,10,15])
 
     f.tight_layout()
     f.subplots_adjust(wspace=0, hspace=0) # Must come after tight_layout to work!
@@ -443,20 +453,6 @@ def plot_new_hexbin(df_g, df_q, df_s):
     # Select plot values:
     val = 'psfmag_r'
     #val = 'feature_1D'
-    # consistent colours for hexbin
-    colors_g = [(1,1,1), (112/255,128/255,144/255)]
-    cmap_g = make_cmap(colors_g)
-    colors_q = [(1,1,1), (255/255,105/255,180/255)]
-    cmap_q = make_cmap(colors_q)
-    colors_s = [(1,1,1), (30/255,144/255,255/255)]
-    cmap_s = make_cmap(colors_s)
-
-    colors_g2 = [(1,1,1), (0/255,0/255,0/255)] # black
-    cmap_g2 = make_cmap(colors_g2)
-    colors_q2 = [(1,1,1), (0/255,0/255,255/255)] # blue
-    cmap_q2 = make_cmap(colors_q2)
-    colors_s2 = [(1,1,1), (255/255,165/255,0/255)] # orange
-    cmap_s2 = make_cmap(colors_s2)
 
     gridsize = (60,30)
     marker = '.'
@@ -473,9 +469,9 @@ def plot_new_hexbin(df_g, df_q, df_s):
     plt.sca(axs[0])
     bins = np.linspace(10,27,150) # bins for galaxies (diff for each type)
     #plt.scatter(df[df.class_pred == 'GALAXY'].psfmag_r, df[df.class_pred == 'GALAXY'].prob_g, label='Predicted galaxies', color=galaxy_c, s=s)
-    plt.hexbin(df_g.psf_r_corr, df_g.prob_g, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_g)
-    im = plt.hexbin(df_g.psf_r_corr, df_g.prob_g, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_g)
-    x1, y1 = histvals(df_g.psf_r_corr.values, bins=bins, density=density)
+    plt.hexbin(df_g.psf_r, df_g.prob_g, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_g)
+    im = plt.hexbin(df_g.psf_r, df_g.prob_g, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_g)
+    x1, y1 = histvals(df_g.psf_r.values, bins=bins, density=density)
     plt.plot(x1, y1/y1.max(), label='Histogram of predicted galaxies', linewidth=linewidth, color=galaxy_c)
     plt.xlim(min(bins),max(bins))
     plt.xticks(np.arange(min(bins), max(bins)+1, step=2))
@@ -508,12 +504,13 @@ def plot_new_hexbin(df_g, df_q, df_s):
     plt.minorticks_on()
 
     # quasars
+    gridsize = (45,30)
     plt.sca(axs[1])
-    bins = np.linspace(2,25,150)
+    bins = np.linspace(10,27,150)
     #plt.scatter(df[df.class_pred == 'QSO'].psfmag_r, df[df.class_pred == 'QSO'].prob_q, label='Predicted quasars', color=quasar_c, s=s)
-    plt.hexbin(df_q.psf_r_corr, df_q.prob_q, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_q)
-    im = plt.hexbin(df_q.psf_r_corr, df_q.prob_q, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_q)
-    x1, y1 = histvals(df_q.psf_r_corr.values, bins=bins, density=density)
+    plt.hexbin(df_q.psf_r, df_q.prob_q, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_q)
+    im = plt.hexbin(df_q.psf_r, df_q.prob_q, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_q)
+    x1, y1 = histvals(df_q.psf_r.values, bins=bins, density=density)
     plt.plot(x1, y1/y1.max(), label='Histogram of predicted quasars', linewidth=linewidth, color=quasar_c)
     plt.xlim(min(bins),max(bins))
     plt.xticks(np.arange(min(bins), max(bins)+1, step=2))
@@ -546,12 +543,13 @@ def plot_new_hexbin(df_g, df_q, df_s):
 
 
     # stars
+    gridsize = (60,30)
     plt.sca(axs[2])
-    bins = np.linspace(2,27,150)
+    bins = np.linspace(10,27,150)
     #plt.scatter(df[df.class_pred == 'STAR'].psfmag_r, df[df.class_pred == 'STAR'].prob_s, label='Predicted stars', color=star_c, s=s)
-    plt.hexbin(df_s.psf_r_corr, df_s.prob_s, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_s)
-    im = plt.hexbin(df_s.psf_r_corr, df_s.prob_s, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_s)
-    x1, y1 = histvals(df_s.psf_r_corr.values, bins=bins, density=density)
+    plt.hexbin(df_s.psf_r, df_s.prob_s, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_s)
+    im = plt.hexbin(df_s.psf_r, df_s.prob_s, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_s)
+    x1, y1 = histvals(df_s.psf_r.values, bins=bins, density=density)
     plt.plot(x1, y1/y1.max(), label='Histogram of predicted stars', linewidth=linewidth, color=star_c)
     plt.xlim(min(bins),max(bins))
     plt.xticks(np.arange(min(bins), max(bins)+1, step=2))
@@ -586,7 +584,7 @@ def plot_new_hexbin(df_g, df_q, df_s):
     cax.set_xticklabels(labels)
     plt.minorticks_on()
 
-    plt.savefig('New-sources-prob-hexbin.pdf', bbox_inches='tight', dpi=700)
+    plt.savefig('New-sources-prob-hexbin.pdf', bbox_inches='tight')
 
 
 
@@ -614,12 +612,12 @@ def plot_new_feature_hist(df_spec, df_g, df_q, df_s):
     # define labels for the x axis
     xlabels = ['u', 'g', 'r', 'i', 'z', 'w1', 'w2', 'w3', 'w4'] # more concise labels.
     # Only keep magnitude features to plot (remove resolvedr feature):
-    plot_columns = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4']
+    plot_columns = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4']
     # OLD # plot_columns = ['psfmag_u', 'psfmag_g', 'psfmag_r', 'psfmag_i', 'psfmag_z', 'w1', 'w2', 'w3', 'w4']
 
-    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(10,4))
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(10,3.5))
     plt.sca(ax1) # plt. gives easier access to some parms. Also means pandas.plot works nicely for current axis.
-    # set up transform to offset each of the lines so they dono't overlap
+    # set up transform to offset each of the errorbar lines so they dono't overlap (this is literal magic)
     offset = lambda p: transforms.ScaledTranslation(p/72.,0, plt.gcf().dpi_scale_trans)
     trans = plt.gca().transData
 
@@ -685,17 +683,115 @@ def plot_new_feature_hist(df_spec, df_g, df_q, df_s):
 
 
 
+def plot_new_probs(dfg, dfq, dfs):
+    print('Plotting histogram over all UGRIZ and W1234 bands... New-sources-maghist.pdf')
+    # histogram over these values:
+    # bins for resolved psf_r - cmodel_r
+    bins_res = 10 ** np.linspace(np.log10(1e-5), np.log10(10), 400)
+    ls = '-'
+    alpha=0.3
+    linewidth_hist=2
+    mag_val='resolvedr'
+    # define labels for the x axis
+
+    f = plt.figure(figsize=(5,3.5))
+    '''
+    # Histogram of psf_r - cmod_r. Resolved source or not?
+    x, y = histvals(df_g.resolvedr.values, bins=bins_res)
+    plt.plot(x, y, ls=ls, color=galaxy_c)
+    x, y = histvals(df_q.resolvedr.values, bins=bins_res)
+    plt.plot(x, y, ls=ls, color=quasar_c)
+    x, y = histvals(df_s.resolvedr.values, bins=bins_res)
+    plt.plot(x, y, ls=ls, color=star_c)
+    # sources with spectra:
+    x, y = histvals(df_spec[df_spec['class']=='GALAXY'].resolvedr.values, bins=bins_res)
+    plt.plot(x, y, ls='--', color=galaxy_c, linewidth=0.5)
+    x, y = histvals(df_spec[df_spec['class']=='QSO'].resolvedr.values, bins=bins_res)
+    plt.plot(x, y, ls='--', color=quasar_c, linewidth=0.5)
+    x, y = histvals(df_spec[df_spec['class']=='STAR'].resolvedr.values, bins=bins_res)
+    plt.plot(x, y, ls='--', color=star_c, linewidth=0.5)
+    '''
+
+    # ------------ ------------ PROBABILITIES PER BIN ------------ ------------
+    # get average of probabilities for each bin in the histogram
+    g_probs = []
+    q_probs = []
+    s_probs = []
+    g_probs_std = []
+    q_probs_std = []
+    s_probs_std = []
+
+    x = bins_res # same bins used for f1 score
+    # loop over histgoram bins to calculate other stuff (probabilities) per bin. Whilst a bit meh and unpythonic, its quite fast:
+    interval = 2 # sample x-axis bins more smoothly?
+    for xidx in range(0, len(x[:-1]), interval):
+        # note we add 2 to each index because of how histvals function returns same y value for each pair of incremental x values.
+        g_probs.append( dfg[ (dfg[mag_val] > x[xidx]) & (dfg[mag_val] < x[xidx+1]) ].prob_g.values.mean() )
+        q_probs.append( dfq[ (dfq[mag_val] > x[xidx]) & (dfq[mag_val] < x[xidx+1]) ].prob_q.values.mean() )
+        s_probs.append( dfs[ (dfs[mag_val] > x[xidx]) & (dfs[mag_val] < x[xidx+1]) ].prob_s.values.mean() )
+        g_probs_std.append( dfg[ (dfg[mag_val] > x[xidx]) & (dfg[mag_val] < x[xidx+1]) ].prob_g.values.std() )
+        q_probs_std.append( dfq[ (dfq[mag_val] > x[xidx]) & (dfq[mag_val] < x[xidx+1]) ].prob_q.values.std() )
+        s_probs_std.append( dfs[ (dfs[mag_val] > x[xidx]) & (dfs[mag_val] < x[xidx+1]) ].prob_s.values.std() )
+        # Line below is incredibly slow - do not chain .loc inside conditions - left it here to remind me to be more efficient in the future:
+        #g_probs.append( df.loc[correct_galaxy.index.values][ (df.loc[correct_galaxy.index.values][mag_val] > x[xidx]) & (df.loc[correct_galaxy.index.values][mag_val] < x[xidx+2]) ].prob_g.values.mean() )
+
+    plt.plot(x[0:-1:interval], g_probs, ls=ls, color=galaxy_c, linewidth=linewidth_hist, label='Galaxy')
+    plt.plot(x[0:-1:interval], q_probs, ls=ls, color=quasar_c, linewidth=linewidth_hist, label='Quasar')
+    plt.plot(x[0:-1:interval], s_probs, ls=ls, color=star_c, linewidth=linewidth_hist, label='Star')
+    err_ls='-'
+    #plt.plot(x[0:-1:interval], np.array(g_probs)+np.array(g_probs_std), ls=err_ls, color=galaxy_c, linewidth=linewidth_hist)
+    #plt.plot(x[0:-1:interval], np.array(g_probs)-np.array(g_probs_std), ls=err_ls, color=galaxy_c, linewidth=linewidth_hist)
+    #plt.plot(x[0:-1:interval], np.array(q_probs)+np.array(q_probs_std), ls=err_ls, color=quasar_c, linewidth=linewidth_hist)
+    #plt.plot(x[0:-1:interval], np.array(q_probs)-np.array(q_probs_std), ls=err_ls, color=quasar_c, linewidth=linewidth_hist)
+    #plt.plot(x[0:-1:interval], np.array(s_probs)+np.array(s_probs_std), ls=err_ls, color=star_c, linewidth=linewidth_hist)
+    #plt.plot(x[0:-1:interval], np.array(s_probs)-np.array(s_probs_std), ls=err_ls, color=star_c, linewidth=linewidth_hist)
+
+    # too overcrowded with filling between 1sigma error on probabilities
+    plt.fill_between(x[0:-1:interval], np.array(g_probs)+np.array(g_probs_std), np.array(g_probs)-np.array(g_probs_std), color=galaxy_c, step='mid', linewidth=0, alpha=alpha)
+    plt.fill_between(x[0:-1:interval], np.array(q_probs)+np.array(q_probs_std), np.array(q_probs)-np.array(q_probs_std), color=quasar_c, step='mid', linewidth=0, alpha=alpha)
+    plt.fill_between(x[0:-1:interval], np.array(s_probs)+np.array(s_probs_std), np.array(s_probs)-np.array(s_probs_std), color=star_c, step='mid', linewidth=0, alpha=alpha)
+
+    # plot normalised number counts
+    x, g = histvals(dfg[mag_val], bins=bins_res)
+    x, s = histvals(dfq[mag_val], bins=bins_res)
+    x, q = histvals(dfs[mag_val], bins=bins_res)
+    # plot normalised histogram divided by 2 to use up lower half of plot
+    # normalise each hist by galaxy count to get relative heights correct
+    plt.plot(x, g/g.max(), ls='--', color=galaxy_c, linewidth=0.5)
+    plt.plot(x, q/q.max(), ls='--', color=quasar_c, linewidth=0.5)
+    plt.plot(x, s/s.max(), ls='--', color=star_c, linewidth=0.5)
+
+    plt.plot(0, 0, label='Histogram\nper class', ls='--', color='black', linewidth=1)
+    plt.plot(0, 0, label='', color='none')
+
+    plt.xlim(2e-4,10)
+    plt.legend(frameon=False, markerscale=0.2, loc=[0.85,0.23], fontsize=5)
+    # ticks on both sides of plot
+    plt.tick_params(which='both', right=True)
+    plt.xscale('log')
+    plt.xlabel('| PSF r - cmodel r | [magnitude]')
+    plt.ylabel('Classification probability')
+    plt.tight_layout()
+    f.savefig('New-sources-resolvedr-probs.pdf')
+    plt.clf()
+
+
+
+    # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+
+
+
 
 
 
 def plot_newsources_redshift(df_g, df_q, df_s):
     print('Plotting... New-sources-redshift.pdf')
     # bins for resolved psf_r - cmodel_r
-    bins_z = 10 ** np.linspace(np.log10(1e-4), np.log10(1.1), 600)
+    bins_z = 10 ** np.linspace(np.log10(4e-4), np.log10(1.1), 600)
     #bins_z = np.linspace(1e-6, 1.1, 400)
     linewidth_hist = 1
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(5,3.5))
     xg, yg = histvals(df_g[df_g.z>0].dropna().z, bins=bins_z)
     xq, yq = histvals(df_q[df_q.z>0].dropna().z, bins=bins_z)
     xs, ys = histvals(df_s[df_s.z>0].dropna().z, bins=bins_z)
@@ -734,9 +830,12 @@ def plot_newsources_redshift(df_g, df_q, df_s):
 
 def load_spec():
     # Load in spec objects for plotting later
-    print('Loading df with spec objects and appending "class_pred" and "prob_" columns...')
-    df_spec = load_obj('df')
+    print('Loading df with spec objects...')
+    df_spec = load_obj('df_spec_classprobs')
     # Load in spec df and join class_pred and prob_ columns:
+    ### NOT DONE ANYMORE, MOVED THIS TO SDSS_ML.PY
+    ### Everything is in df_spec_classprobs now, rather than df.
+    '''
     data_prep_dict_all = load_obj('data_prep_dict_all')
     classes_pred_all = load_obj('classes_pred_all')
     classes_pred_all_proba = load_obj('classes_pred_all_proba')
@@ -748,6 +847,7 @@ def load_spec():
     df_proba = pd.DataFrame(classes_pred_all_proba, index=data_prep_dict_all['features_test'].index, columns=['prob_g', 'prob_q', 'prob_s'])
     # Append probabilities to the original df for test data:
     df_spec = df_spec.join(df_proba, how='left')
+    '''
     return df_spec
 
 
@@ -792,14 +892,14 @@ def print_result_numbers():
 def save_catalogue_todisk(df_all, writetodisk=True, sliced=False):
     print(' Dropping irrelevant columns...')
     # rename columns for readability
-    new_colnames = ['objid', 'ra', 'dec', 'type', 'cmod_r_corr', 'psf_u_corr', 'psf_g_corr',
-       'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4',
+    new_colnames = ['objid', 'ra', 'dec', 'type', 'cmod_r', 'psf_u', 'psf_g',
+       'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4',
        'match_dist', 'z', 'zerr', 'photoErrorClass', 'resolvedr', 'class_pred',
        'class_prob_galaxy', 'class_prob_quasar', 'class_prob_star']
     df_all.columns = new_colnames
     print(len(df_all))
 
-    drop_columns = ['cmod_r_corr', 'type', 'match_dist', 'z', 'zerr', 'photoErrorClass']
+    drop_columns = ['cmod_r', 'type', 'match_dist', 'z', 'zerr', 'photoErrorClass']
     df_all.drop(columns=drop_columns, inplace=True)
     # split up
     df_g = df_all[df_all['class_pred']=='GALAXY']
@@ -811,12 +911,18 @@ def save_catalogue_todisk(df_all, writetodisk=True, sliced=False):
     df_q.sort_values(by=['class_prob_quasar'], ascending=False, inplace=True)
     df_s.sort_values(by=['class_prob_star'], ascending=False, inplace=True)
 
-    # save as smaller dfs, aiming for less than 100 MB per df so we can upload to github
-
+    # Save catalogue to disk
     if writetodisk==True:
-        if sliced==True:
+        if sliced==False: # default option
+            print(' Saving data as single dfs...')
+            df_all.to_pickle('./data/SDSS-ML-all.pkl')
+            df_g.to_pickle('./data/SDSS-ML-galaxies.pkl')
+            df_q.to_pickle('./data/SDSS-ML-quasars.pkl')
+            df_s.to_pickle('./data/SDSS-ML-stars.pkl')
+
+        if sliced==True: # save as smaller dfs, each less than 100 MB? Not used now.
             print(' Saving galaxies...')
-            number_of_chunks_g = 80
+            number_of_chunks_g = 80 # tuned to get roughly 100 in each file...
             for id, df_i in enumerate(np.array_split(df_g, number_of_chunks_g)):
                df_i.to_pickle('./data/galaxy/SDSS-ML-GALAXY-{0}.pkl'.format(id))
 
@@ -830,12 +936,7 @@ def save_catalogue_todisk(df_all, writetodisk=True, sliced=False):
             for id, df_i in enumerate(np.array_split(df_s, number_of_chunks_s)):
                 df_i.to_pickle('./data/star/SDSS-ML-STAR-{0}.pkl'.format(id))
 
-        if sliced==False:
-            print(' Saving data as single dfs...')
-            df_all.to_pickle('./data/SDSS-ML-all.pkl')
-            df_g.to_pickle('./data/SDSS-ML-galaxies.pkl')
-            df_q.to_pickle('./data/SDSS-ML-quasars.pkl')
-            df_s.to_pickle('./data/SDSS-ML-stars.pkl')
+
 
     return df_all
 
@@ -844,13 +945,9 @@ def save_catalogue_todisk(df_all, writetodisk=True, sliced=False):
 
 
 
-    # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-
-
-
-
-
-
+#-------------------------------------------------
+# Main code
+#-------------------------------------------------
 
 
 
@@ -861,11 +958,20 @@ if __name__ == "__main__":
 
     # Set plot defaults for all plots
     mpl.rcParams.update({'font.size': 8})
-    mpl.rcParams.update({'figure.dpi': 400})
+    mpl.rcParams.update({'figure.dpi': 100})
     # Parameters for all plots:
     quasar_c = 'hotpink'
     star_c = 'dodgerblue'
-    galaxy_c = 'slategrey'
+    #galaxy_c = 'slategrey'
+    galaxy_c = (101/255,236/255,101/255) # alexgreen
+    # consistent colours for hexbin colourscale
+    colors_g = [(1,1,1), (101/255,236/255,101/255)] # alexgreen
+    cmap_g = make_cmap(colors_g)
+    colors_q = [(1,1,1), (255/255,105/255,180/255)]
+    cmap_q = make_cmap(colors_q)
+    colors_s = [(1,1,1), (30/255,144/255,255/255)]
+    cmap_s = make_cmap(colors_s)
+
     ls = '-'
     linewidth = 1
     rotation = 0
@@ -875,7 +981,7 @@ if __name__ == "__main__":
     datafile_DropDuplicates='SDSS_allphoto_111M.csv_DropDuplicates'
     datafile_classified='SDSS_allphoto_111M.csv_classified'
     # feature names in the datafile
-    feature_columns = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4', 'resolvedr']
+    feature_columns = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4', 'resolvedr']
 
     # There are 2 processing options: To batch or not to batch.
     # Preferred option is to use a high performance machine (100 GB of RAM) and avoid batch processing
@@ -906,6 +1012,11 @@ if __name__ == "__main__":
     plot_new_hist_batched(datafile, new_classes_all, new_classes_proba_all, feature_columns, nrows=nrows, chunksize=chunksize)
     '''
     # I haven't written batched versions of all the functions. Nor have I updated this batched version since writing final versions of the non-batched versions. Use with care.
+    # ----------------------- ----------------------- -----------------------
+
+
+
+
 
 
     # ----------------------- ----------------------- -----------------------
@@ -920,20 +1031,21 @@ if __name__ == "__main__":
 
     # load new sources classified
     df_all = load_obj(datafile_classified)
+    print(len(df_all))
     # Cut down data for quick test runs if needed:
     #df_all=df_all[0:100000]
 
     # Split out dfs per class. Doing it once here saves time when making multiple plots later
-    #print('Separating classes into separate dfs...')
-    #df_g = df_all[df_all['class_pred']=='GALAXY']
-    #df_q = df_all[df_all['class_pred']=='QSO']
-    #df_s = df_all[df_all['class_pred']=='STAR']
+    print('Separating classes into separate dfs...')
+    df_g = df_all[df_all['class_pred']=='GALAXY']
+    df_q = df_all[df_all['class_pred']=='QSO']
+    df_s = df_all[df_all['class_pred']=='STAR']
 
     # Load in spec objects for comparison and plotting
-    #df_spec = load_spec()
+    df_spec = load_spec()
 
     # Print out number of classified sources and their probabilities
-    #print_result_numbers()
+    print_result_numbers()
 
 
     # --- Plotting ---
@@ -945,14 +1057,17 @@ if __name__ == "__main__":
     #plot_new_maghist(df_g, df_q, df_s)
     #plot_newsources_redshift(df_g, df_q, df_s)
 
+    #plot_new_probs(df_g, df_q, df_s)
+    #exit()
+
     # dropping irrelevant columns and saving csv file to disk in chunks
     # turn write to disk off if you just want the cleaned up df_all
     # sliced=True will shop the df up into lots of files less than 100 MB. Not used now.
-    df_all = save_catalogue_todisk(df_all, writetodisk=False, sliced=False)
+    df_all = df_all.round({'ra': 5, 'dec': 5, 'psf_u': 5, 'psf_g': 5, 'psf_r': 5, 'psf_i': 5, 'psf_z': 5, 'w1': 5, 'w2': 5, 'w3': 5, 'w4': 5, 'resolvedr': 5})
+    df_all = save_catalogue_todisk(df_all, writetodisk=True, sliced=False)
 
     # Get small sample of sources as csv
-    df_all = df_all.round(5)
-    print('Sample of 100 objects saved to disk as csv: SDSS-ML-sample100.csv')
+    print('Sample of 60 objects saved to disk as csv: SDSS-ML-sample60.csv')
     # to get 20 of each, split up df
     sample_g = df_all[df_all.class_pred=='GALAXY'].sample(n=20)
     sample_q = df_all[df_all.class_pred=='QSO'].sample(n=20)
@@ -960,6 +1075,7 @@ if __name__ == "__main__":
     # recombine
     sample_all = pd.concat([sample_g, sample_q, sample_s])
     # save to disk as csv
+    sample_all.round(5)
     sample_all.to_csv('SDSS-ML-sample60.csv')
 
 

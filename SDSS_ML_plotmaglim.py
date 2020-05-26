@@ -26,9 +26,8 @@ mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
 import matplotlib.pyplot as plt
 import pickle #save/load python data objects (dictionaries/arrays)
 
-from SDSS_ML_analysis import load_obj
-
 # list of functions:
+# lsave_obj load_obj
 # plot_metrics_trainlimit
 # plot_trainlimit
 
@@ -41,16 +40,37 @@ from SDSS_ML_analysis import load_obj
 
 
 
-def plot_metrics_trainlimit(rev=True):
+#Loading/saving python data objects
+def save_obj(obj, name ):
+    with open(name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+def load_obj(name ):
+    with open(name + '.pkl', 'rb') as f:
+        return pickle.load(f)
+
+
+
+
+
+
+# ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+
+
+
+
+
+
+def plot_metrics_trainlimit(rev=False):
     # make plots of metrics for various runs where the training has been restricted to a magnitude limit
     if rev==False:
         try:
-            m185 = load_obj('metrics_df_185mag')
-            m19 = load_obj('metrics_df_19mag')
-            m195 = load_obj('metrics_df_195mag')
-            m20 = load_obj('metrics_df_20mag')
-            m205 = load_obj('metrics_df_205mag')
-            m21 = load_obj('metrics_df_21mag')
+            m185 = load_obj('metrics_df_185m')
+            m19 = load_obj('metrics_df_19m')
+            m195 = load_obj('metrics_df_195m')
+            m20 = load_obj('metrics_df_20m')
+            m205 = load_obj('metrics_df_205m')
+            m21 = load_obj('metrics_df_21m')
         except:
             print('Missing files, did you run SDSS_ML_analysis.py plot_metric_curves to save the data to disk?')
 
@@ -67,6 +87,7 @@ def plot_metrics_trainlimit(rev=True):
 
     m_all = load_obj('metrics_df_allmag')
 
+    
     # metrics = {'x':x_tmp, 'g':g, 's':s, 'q':q, 'pg':pg, 'rg':rg, 'f1g':f1g, 'pgerr':pgerr, 'rgerr':rgerr, 'f1gerr':f1gerr, 'pq':pq, 'rq':rq, 'f1q':f1q, 'pqerr':pqerr, 'rqerr':rqerr, 'f1qerr':f1qerr, 'ps':ps, 'rs':rs, 'f1s':f1s, 'pserr':pserr, 'rserr':rserr, 'f1serr':f1serr}
     # probs = {'g_probs':g_probs, 's_probs':s_probs, 'q_probs':q_probs}
 
@@ -86,8 +107,9 @@ def plot_metrics_trainlimit(rev=True):
             if key!='all':
                 plt.plot(x_maglims[key]['x'], x_maglims[key][metric+'g'], label=key, color=c, linewidth=0.5)
         plt.vlines(x=list(x_maglims.keys())[:-1], ymin=0, ymax=1, colors=colors, ls='--', linewidth=0.5)
-        plt.xlim(14,26)
+        plt.xticks(np.arange(15,26,2)) # custom ticks to prevent overlapping at edges with wspace=0
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
+        plt.xlim(14,26)
         plt.minorticks_on()
         if metric=='p':
             plt.ylabel('Precision')
@@ -96,8 +118,8 @@ def plot_metrics_trainlimit(rev=True):
         if metric=='f1':
             plt.ylabel('F1 score')
         if ax_i==2:
-            plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
             plt.xticks(np.arange(15,26,2)) # custom ticks to prevent overlapping at edges with wspace=0
+            plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
             plt.xlabel('PSF r magnitude for galaxies')
         if ax_i==1:
             plt.legend(frameon=False, fontsize=8, bbox_to_anchor=(0.35, 0.65))
@@ -112,12 +134,13 @@ def plot_metrics_trainlimit(rev=True):
             if key!='all':
                 plt.plot(x_maglims[key]['x'], x_maglims[key][metric+'q'], label=key, color=c, linewidth=0.5)
         plt.vlines(x=list(x_maglims.keys())[:-1], ymin=0, ymax=1, colors=colors, ls='--', linewidth=0.5)
+        plt.xticks(np.arange(15,26,2)) # custom ticks to prevent overlapping at edges with wspace=0
         plt.xlim(14,26)
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
         plt.minorticks_on()
         if ax_i==2:
-            plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
             plt.xticks(np.arange(15,26,2)) # custom ticks to prevent overlapping at edges with wspace=0
+            plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
             plt.xlabel('PSF r magnitude for quasars')
 
         ## ------ ------ Stars ------ ------
@@ -128,13 +151,14 @@ def plot_metrics_trainlimit(rev=True):
             if key!='all':
                 plt.plot(x_maglims[key]['x'], x_maglims[key][metric+'s'], label=key, color=c, linewidth=0.5)
         plt.vlines(x=list(x_maglims.keys())[:-1], ymin=0, ymax=1, colors=colors, ls='--', linewidth=0.5)
+        plt.xticks(np.arange(9,26,2)) # custom ticks to prevent overlapping at edges with wspace=0
         plt.xlim(8,26)
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
         plt.tick_params(axis='y', which='both', left=True, right=True)
         plt.minorticks_on()
         if ax_i==2:
-            plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
             plt.xticks(np.arange(9,26,2)) # custom ticks to prevent overlapping at edges with wspace=0
+            plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
             plt.xlabel('PSF r magnitude for stars')
 
     f.tight_layout()
@@ -157,12 +181,12 @@ def plot_trainlimit(rev=False):
     # make plots of metrics for various runs where the training has been restricted to a magnitude limit
     if rev==False:
         try:
-            m185 = load_obj('metrics_df_185mag')
-            m19 = load_obj('metrics_df_19mag')
-            m195 = load_obj('metrics_df_195mag')
-            m20 = load_obj('metrics_df_20mag')
-            m205 = load_obj('metrics_df_205mag')
-            m21 = load_obj('metrics_df_21mag')
+            m185 = load_obj('metrics_df_185m')
+            m19 = load_obj('metrics_df_19m')
+            m195 = load_obj('metrics_df_195m')
+            m20 = load_obj('metrics_df_20m')
+            m205 = load_obj('metrics_df_205m')
+            m21 = load_obj('metrics_df_21m')
         except:
             print('Missing files, did you run SDSS_ML_analysis.py plot_metric_curves to save the data to disk?')
 
@@ -187,7 +211,6 @@ def plot_trainlimit(rev=False):
     # get first time the f1 score drops below a certain value, with the condition that r mag is greater than the training limit:
     #for key in list(x_maglims.keys())[:-1]:
     #    x_maglims[key]['ratio'] = x_maglims[key]['f1g']/x_maglims['all']['f1g'] # append ratio to df
-
 
     f, axs = plt.subplots(1, 3, figsize=(10,4), sharey=True, sharex=False)
     # loop over source type
@@ -218,6 +241,7 @@ def plot_trainlimit(rev=False):
             leg._legend_box.align = "left"
         if ax_i==2:
             plt.xlabel('Training r magnitude limit for stars')
+
         plt.tick_params(axis='x', which='both', top=True, bottom=True)
         plt.tick_params(axis='y', which='both', left=True, right=True)
         plt.minorticks_on()
@@ -252,7 +276,7 @@ def plot_trainlimit(rev=False):
 
 if __name__ == "__main__": #so you can import this code and run by hand if desired
 
-
+    print('_'*50)
     # Set defaults for all plots
     mpl.rcParams.update({'font.size': 8})
     mpl.rcParams.update({'figure.dpi': 400})

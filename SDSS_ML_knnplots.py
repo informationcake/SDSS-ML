@@ -22,7 +22,6 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import matplotlib as mpl
-mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import matplotlib.transforms as transforms
@@ -44,8 +43,8 @@ from datashader.colors import *
 from SDSS_ML_analysis import load_obj, save_obj, prepare_classifications
 
 # list of functions:
-# knn_closest
 # get_nearest_neighbour_idx
+# get_knn_accuracy_MT
 # get_knn_accuracy_MT
 # get_knn_accuracy
 # plot_knn_f1scores
@@ -329,26 +328,28 @@ def plot_knn_f1scores(plot_label=''):
     # 1D - 1dfeature vs f1
     xmin1d = df1d.star_xvar_mean.min() - 0.1 # padd for plotting later
     xmax1d = df1d.star_xvar_mean.max() + 0.1
+    print(xmin1d, xmax1d)
     ymin = 0
     ymax = 1.05
     cvs = ds.Canvas(plot_width=1000, plot_height=600,
                    x_range=(xmin1d,xmax1d), y_range=(ymin,ymax),
                    x_axis_type='linear', y_axis_type='linear')
     agg = cvs.points(df_all_1d, 'feature1d_mean', 'f1', ds.count_cat('class'))
-    ckey = dict(GALAXY='slategrey', QSO='hotpink', STAR='dodgerblue')
+    ckey = dict(GALAXY=(101,236,101), QSO='hotpink', STAR='dodgerblue')
     img = tf.shade(agg, color_key=ckey, how='log')
     export_image(img, 'knn1d_1d_vs_f1', fmt='.png', background='white')
 
     # 10D - 1dfeature vs f1
     xmin10d = df10d.star_xvar_mean.min() - 0.1 # padd for plotting later
     xmax10d = df10d.star_xvar_mean.max() + 0.1
+    print(xmin10d, xmax10d)
     ymin = 0
     ymax = 1.05
     cvs = ds.Canvas(plot_width=200, plot_height=120,
                    x_range=(xmin10d,xmax10d), y_range=(ymin,ymax),
                    x_axis_type='linear', y_axis_type='linear')
     agg = cvs.points(df_all_10d, 'feature10d_mean', 'f1', ds.count_cat('class'))
-    ckey = dict(GALAXY='slategrey', QSO='hotpink', STAR='dodgerblue')
+    ckey = dict(GALAXY=(101,236,101), QSO='hotpink', STAR='dodgerblue')
     img = tf.shade(agg, color_key=ckey, how='log')
     export_image(img, 'knn10d_1d_vs_f1', fmt='.png', background='white')
 
@@ -361,7 +362,7 @@ def plot_knn_f1scores(plot_label=''):
                    x_range=(xmin1d_probs,xmax1d_probs), y_range=(ymin,ymax),
                    x_axis_type='linear', y_axis_type='linear')
     agg = cvs.points(df_all_1d, 'probs_mean', 'f1', ds.count_cat('class'))
-    ckey = dict(GALAXY='slategrey', QSO='hotpink', STAR='dodgerblue')
+    ckey = dict(GALAXY=(101,236,101), QSO='hotpink', STAR='dodgerblue')
     img = tf.shade(agg, color_key=ckey, how='log')
     export_image(img, 'knn1d_probs_vs_f1', fmt='.png', background='white')
 
@@ -374,7 +375,7 @@ def plot_knn_f1scores(plot_label=''):
                    x_range=(xmin10d_probs,xmax10d_probs), y_range=(ymin,ymax),
                    x_axis_type='linear', y_axis_type='linear')
     agg = cvs.points(df_all_10d, 'probs_mean', 'f1', ds.count_cat('class'))
-    ckey = dict(GALAXY='slategrey', QSO='hotpink', STAR='dodgerblue')
+    ckey = dict(GALAXY=(101,236,101), QSO='hotpink', STAR='dodgerblue')
     img = tf.shade(agg, color_key=ckey, how='log')
     export_image(img, 'knn10d_probs_vs_f1', fmt='.png', background='white')
 
@@ -412,7 +413,7 @@ def plot_knn_f1scores(plot_label=''):
     plt.xlabel('1D feature')
     plt.ylabel('F1 score in 1 dimensions')
     #axs[1].text(0.95, 0.01, 'calculated from 10000 nearest neighbours in 10 dimensions', verticalalignment='bottom', horizontalalignment='right', transform=axs[1].transAxes, color='black', fontsize=8)
-    plt.xlim(-8,11.5)
+    plt.xlim(-7,12.5)
     plt.legend(frameon=False, loc='lower right')
     plt.tight_layout()
     fig.tight_layout()
@@ -447,10 +448,11 @@ def plot_knn_f1scores(plot_label=''):
     plt.xlabel('Classification probability')
     plt.ylabel('F1 score in 1 dimension')
     #axs[0].text(0.95, 0.01, 'calculated from 10000 nearest neighbours in 1 dimension', verticalalignment='bottom', horizontalalignment='right', transform=axs[0].transAxes, color='black', fontsize=8)
+    #plt.xlim(0.66,2)
     plt.tight_layout()
 
     #fig.subplots_adjust(wspace=0.1, hspace=0.1) # Must come after tight_layout to work! ... doesn't seem to work when using imshow :(
-    fig.savefig('knn_plot_1dfeature'+plot_label+'.pdf')
+    fig.savefig('knn_plot_1D'+plot_label+'.pdf')
     plt.clf()
 
 
@@ -458,9 +460,7 @@ def plot_knn_f1scores(plot_label=''):
 
 
 
-    # ---------------- Now plot probabilities ----------------
-    # ---------------- Now plot probabilities ----------------
-    # ---------------- Now plot probabilities ----------------
+    # ---------------- 10-d ----------------
 
 
 
@@ -498,7 +498,7 @@ def plot_knn_f1scores(plot_label=''):
     plt.xlabel('1D feature')
     plt.ylabel('F1 score in 10 dimensions')
     #axs[1].text(0.95, 0.01, 'calculated from 10000 nearest neighbours in 10 dimensions', verticalalignment='bottom', horizontalalignment='right', transform=axs[1].transAxes, color='black', fontsize=8)
-    plt.xlim(-8,11.5)
+    plt.xlim(-7,12.5)
     plt.tight_layout()
 
     # --- 10D --- probs ---
@@ -530,7 +530,8 @@ def plot_knn_f1scores(plot_label=''):
     #axs[1].text(0.95, 0.01, 'calculated from 10000 nearest neighbours in 10 dimensions', verticalalignment='bottom', horizontalalignment='right', transform=axs[1].transAxes, color='black', fontsize=8)
     plt.tight_layout()
     fig.tight_layout()
-    fig.savefig('knn_plot_probs'+plot_label+'.pdf')
+    #plt.xlim(0.66,2)
+    fig.savefig('knn_plot_10D'+plot_label+'.pdf')
 
 
 
@@ -559,20 +560,21 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
 
     # Set plot defaults for all plots
     mpl.rcParams.update({'font.size': 8})
-    mpl.rcParams.update({'figure.dpi': 400})
+    mpl.rcParams.update({'figure.dpi': 300})
 
     # Parameters for all plots:
     quasar_c = 'hotpink'
     star_c = 'dodgerblue'
-    galaxy_c = 'slategrey'
+    #galaxy_c = 'slategrey'
+    galaxy_c = (101/255,236/255,101/255) # alexgreen
 
     quasar_c2 = 'black'
     star_c2 = 'blue'
     galaxy_c2 = 'orange'
 
-    psf_ext = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr']
+    psf = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z']
     wise = ['w1' ,'w2', 'w3', 'w4']
-    feature_columns = psf_ext + wise + ['resolvedr']
+    feature_columns = psf + wise + ['resolvedr']
 
     df = load_obj('df')
     data_prep_dict_all = load_obj('data_prep_dict_all')
@@ -597,13 +599,13 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     # BEWARE! This is very computationally intensive. Get as many cores for multithread as possible
 
 
-
+    '''
     # Get indices for nearest neighbours. Run once and save output to disk for plot_knn_accuracy
     # This can take a week to run for 100000 sources (when n=12). Took 22 hours (using 40 threads) in 1 and 10-D for 100000 sources.
     print('Getting NN in 1D... {0}'.format(datetime.datetime.utcnow()))
-    get_nearest_neighbour_idx(df, dim=1, sample_every_n=12, neighbours=10000) # sample_every_n=2000 gives ~600 sources
+    get_nearest_neighbour_idx(df, dim=1, sample_every_n=15, neighbours=10000) # sample_every_n=2000 gives ~600 sources. 15 gives 100k.
     print('Getting NN in 10D... {0}'.format(datetime.datetime.utcnow()))
-    get_nearest_neighbour_idx(df, dim=10, sample_every_n=12, neighbours=10000) # sample_every_n=200 gives ~6000 sources
+    get_nearest_neighbour_idx(df, dim=10, sample_every_n=15, neighbours=10000) # sample_every_n=200 gives ~6000 sources
     print('Done. {0}'.format(datetime.datetime.utcnow()))
 
     # Now calculate scores from those nearest neighbours
@@ -613,7 +615,7 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     print('Getting NN f1scores, 10D... {0}'.format(datetime.datetime.utcnow()))
     get_knn_accuracy(dim=10) # takes 20 mins
     print('Done. {0}'.format(datetime.datetime.utcnow()))
-
+    '''
     # Finally, make plots of those scores vs 1D feature and probabilities
     plot_knn_f1scores()
 
