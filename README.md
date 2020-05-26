@@ -1,10 +1,11 @@
 # SDSS-ML
-The paper: https://arxiv.org/pdf/1909.10963.pdf
-
 Identifying galaxies, quasars and stars with machine learning: a new catalogue of classifications for 111 million SDSS sources without spectra
 
+The paper, published in A&A: https://arxiv.org/pdf/1909.10963.pdf
 
-These scripts explore galaxy/quasar/star classification from optical and infrared data using machine learning. We use SDSS Data Release 15.
+Our catalogue can be found and referenced under our DOI here: https://www.doi.org/10.5281/zenodo.3459294
+
+These scripts explore galaxy/quasar/star classification from optical and infrared data using machine learning. We use SDSS Data Release 15. Interestingly, SDSS DR16 has spectroscopic observations of new quasars, which we had already identified using photometric data :)
 
 SDSS_ML.py
 - Cleans data, builds random forest model
@@ -19,6 +20,9 @@ SDSS_ML_knnplots.py
 - Finds nearest neighbours in 1-D and 10-D feature spaces and makes plots
 
 SDSS_ML_classifynew.py
-- Classifies new sources without spectra, and makes plots assessing the output. 
+- Classifies new sources without spectra, and makes plots assessing the output.
 
-Our catalogue can be found and referenced under our DOI here: https://www.doi.org/10.5281/zenodo.3459294
+SDSS_ML_UMAP.py
+- Runs UMAP on the spectroscopic and photometric datasets, and makes 2D plots.
+
+
