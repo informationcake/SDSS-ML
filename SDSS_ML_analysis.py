@@ -24,7 +24,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import matplotlib as mpl
-mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
+#mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import matplotlib.transforms as transforms
@@ -215,7 +215,7 @@ def prepare_classifications(data, classes_pred, ttsplit=True):
 
 
 def plot_trainvsf1(f1_f, f1_f_sampleG, p_f, p_f_sampleG, r_f, r_f_sampleG):
-    mpl.rcParams.update({'font.size': 10})
+    #mpl.rcParams.update({'font.size': 10})
     markersize = 3
     # Data saved to disk from SDSS_ML.py
     f1scores = load_obj(f1_f)
@@ -239,9 +239,9 @@ def plot_trainvsf1(f1_f, f1_f_sampleG, p_f, p_f_sampleG, r_f, r_f_sampleG):
     plt.plot(train_range, precision[:,0], label='Galaxy', marker='o', markersize=markersize, color=galaxy_c)
     plt.plot(train_range, precision[:,1], label='Quasar', marker='o', markersize=markersize, color=quasar_c)
     plt.plot(train_range, precision[:,2], label='Star', marker='o', markersize=markersize, color=star_c)
-    plt.plot(train_range, precision_sampleG[:,0], label='Galaxy (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=galaxy_c)
-    plt.plot(train_range, precision_sampleG[:,1], label='Quasar (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=quasar_c)
-    plt.plot(train_range, precision_sampleG[:,2], label='Star (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=star_c)
+    plt.plot(train_range, precision_sampleG[:,0], label='Galaxy (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=galaxy_c)
+    plt.plot(train_range, precision_sampleG[:,1], label='Quasar (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=quasar_c)
+    plt.plot(train_range, precision_sampleG[:,2], label='Star (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=star_c)
     plt.ylabel('Precision')
     #plt.xscale('log')
     plt.ylim(top=1, bottom=0.85)
@@ -253,9 +253,9 @@ def plot_trainvsf1(f1_f, f1_f_sampleG, p_f, p_f_sampleG, r_f, r_f_sampleG):
     plt.plot(train_range, recall[:,0], label='Galaxy', marker='o', markersize=markersize, color=galaxy_c)
     plt.plot(train_range, recall[:,1], label='Quasar', marker='o', markersize=markersize, color=quasar_c)
     plt.plot(train_range, recall[:,2], label='Star', marker='o', markersize=markersize, color=star_c)
-    plt.plot(train_range, recall_sampleG[:,0], label='Galaxy (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=galaxy_c)
-    plt.plot(train_range, recall_sampleG[:,1], label='Quasar (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=quasar_c)
-    plt.plot(train_range, recall_sampleG[:,2], label='Star (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=star_c)
+    plt.plot(train_range, recall_sampleG[:,0], label='Galaxy (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=galaxy_c)
+    plt.plot(train_range, recall_sampleG[:,1], label='Quasar (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=quasar_c)
+    plt.plot(train_range, recall_sampleG[:,2], label='Star (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=star_c)
     plt.ylabel('Recall')
     plt.ylim(top=1, bottom=0.85)
     plt.minorticks_on()
@@ -266,9 +266,9 @@ def plot_trainvsf1(f1_f, f1_f_sampleG, p_f, p_f_sampleG, r_f, r_f_sampleG):
     plt.plot(train_range, f1[:,0], label='Galaxy', marker='o', markersize=markersize, color=galaxy_c)
     plt.plot(train_range, f1[:,1], label='Quasar', marker='o', markersize=markersize, color=quasar_c)
     plt.plot(train_range, f1[:,2], label='Star', marker='o', markersize=markersize, color=star_c)
-    plt.plot(train_range, f1_sampleG[:,0], label='Galaxy (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=galaxy_c)
-    plt.plot(train_range, f1_sampleG[:,1], label='Quasar (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=quasar_c)
-    plt.plot(train_range, f1_sampleG[:,2], label='Star (trained on balanced classes)', marker='o', markersize=markersize, ls='--', color=star_c)
+    plt.plot(train_range, f1_sampleG[:,0], label='Galaxy (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=galaxy_c)
+    plt.plot(train_range, f1_sampleG[:,1], label='Quasar (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=quasar_c)
+    plt.plot(train_range, f1_sampleG[:,2], label='Star (trained on balanced classes)', marker='o', markersize=markersize, ls=':', color=star_c)
     plt.xlabel('Fraction of data trained on')
     plt.ylabel('F1-score')
     plt.minorticks_on()
@@ -304,17 +304,17 @@ def plot_feature_ranking(pipeline, feature_names):
         #print("%d. feature %d (%f) {0}" % (f + 1, indices[f], importances[indices[f]]), feature_names[indices[f]])
         feature_names_importanceorder.append(str(feature_names[indices[f]]))
     # Plot the feature importances of the forest
-    mpl.rcParams.update({'font.size': 12})
     plt.figure(figsize=(10,6))
     plt.bar(range(len(indices)), importances[indices],
            color='slategrey', yerr=std[indices], align="center")
     plt.xticks(range(len(indices)), indices)
     plt.xlim([-1, len(indices)])
     plt.xticks(range(len(indices)), feature_names_importanceorder, rotation='horizontal')
-    plt.ylabel('Feature importance')
+    plt.ylabel('Feature importance', fontsize=12)
     plt.ylim(bottom=-0.02)
     plt.minorticks_on()
     plt.tick_params(axis='x', which='minor', bottom=False)
+    plt.tick_params(labelsize=12)
     #plt.tick_params(axis='y', which='both', right=True)
     #plt.gca().tick_params(axis='y', which='minor', left=True, right=True)
     plt.tight_layout()
@@ -337,7 +337,7 @@ def plot_basic_hists(df):
     bins = np.linspace(8,26,100)
     linewidth = 1
     plt.subplots(1, 1, figsize=(6,3.5))
-    xvar='psf_r_corr'
+    xvar='psf_r'
     x, s = histvals(df[(df.instrument=='SDSS') & (df['class']=='STAR')][xvar].values, bins=bins)
     x, g = histvals(df[(df.instrument=='SDSS') & (df['class']=='GALAXY')][xvar].values, bins=bins)
     x, q = histvals(df[(df.instrument=='SDSS') & (df['class']=='QSO')][xvar].values, bins=bins)
@@ -359,7 +359,7 @@ def plot_basic_hists(df):
     plt.minorticks_on()
     plt.legend(frameon=False)
     plt.tight_layout()
-    plt.savefig('All-hist-rmag.pdf')
+    plt.savefig('spec-hist-rmag.pdf')
 
 
 
@@ -376,12 +376,55 @@ def plot_basic_hists(df):
     # Plot histogram of z
 def plot_z_hist(df, missed_star, missed_quasar, missed_galaxy, correct_star, correct_quasar, correct_galaxy,
     missed_star_as_quasar, missed_star_as_galaxy, missed_quasar_as_star, missed_quasar_as_galaxy, missed_galaxy_as_star, missed_galaxy_as_quasar, plot_data_label='unknown'):
-    mpl.rcParams.update({'font.size': 10})
-    figsize = (7,9) # when there are three subplots
+    #mpl.rcParams.update({'font.size': 10})
+    #3figsize = (7,9) # when there are three subplots
+    figsize = (6,3.5) # when there are three subplots
     bins = np.linspace(0, 10 ,100)
     xlab = 'redshift'
     val = 'z'
     df['z'] = df['z'].abs() #forcing stars to have positive redshifts for the purpose of this plot
+
+    f = plt.figure(figsize=figsize)
+
+    x, y = histvals(df.loc[missed_galaxy_as_quasar.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='missed galaxies as quasars: {0}'.format(len(missed_galaxy_as_quasar)), ls=missed_ls, color=galaxy_c)
+    x, y = histvals(df.loc[missed_galaxy_as_star.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='missed galaxies as stars: {0}'.format(len(missed_galaxy_as_star)), ls=':', color=galaxy_c)
+
+    x, y = histvals(df.loc[missed_quasar_as_galaxy.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='missed quasars as galaxies: {0}'.format(len(missed_quasar_as_galaxy)), ls=missed_ls, color=quasar_c)
+    x, y = histvals(df.loc[missed_quasar_as_star.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='missed quasars as stars: {0}'.format(len(missed_quasar_as_star)), ls=':', color=quasar_c)
+
+    x, y = histvals(df.loc[missed_star_as_quasar.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='missed stars as quasars: {0}'.format(len(missed_star_as_quasar)), ls=missed_ls, color=star_c)
+    x, y = histvals(df.loc[missed_star_as_galaxy.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='missed stars as galaxies: {0}'.format(len(missed_star_as_galaxy)), ls=':', color=star_c)
+
+    x, y = histvals(df.loc[correct_galaxy.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='correct galaxies: {0}'.format(len(correct_galaxy)), ls=correct_ls, color=galaxy_c)
+    x, y = histvals(df.loc[correct_quasar.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='correct quasars: {0}'.format(len(correct_quasar)), ls=correct_ls, color=quasar_c)
+    x, y = histvals(df.loc[correct_star.index.values][val].values, bins=bins, density=density)
+    plt.plot(x, y, label='correct stars: {0}'.format(len(correct_star)), ls=correct_ls, color=star_c)
+
+    plt.legend(frameon=False, fontsize=8)
+    plt.yscale('log')
+    #plt.xscale('log')
+    plt.ylim(top=3*10**5)
+    plt.xlim(-0.19, 7.19)
+    plt.minorticks_on()
+    plt.ylabel('Number of sources')
+    plt.xlabel(xlab)
+    plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
+    plt.tick_params(axis='y', which='both', right=True)
+    #plt.tick_params(labelsize=10)
+    f.tight_layout()
+    f.subplots_adjust(wspace=0, hspace=0) # Must come after tight_layout to work!
+    f.savefig('z-hist'+plot_data_label+'.pdf')
+
+    '''
+    # when as three subplots
     f, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=figsize, sharex=True)
 
     ## ------ ------ Galaxy / Quasar ------ ------
@@ -406,6 +449,7 @@ def plot_z_hist(df, missed_star, missed_quasar, missed_galaxy, correct_star, cor
     plt.xlabel(xlab)
     plt.tick_params(axis='x', which='both', bottom=True, top=True)
     plt.tick_params(axis='y', which='both', right=True)
+    plt.tick_params(labelsize=12)
 
     ## ------ ------ Star / Quasar  ------ ------
 
@@ -428,6 +472,7 @@ def plot_z_hist(df, missed_star, missed_quasar, missed_galaxy, correct_star, cor
     plt.xlabel(xlab)
     plt.tick_params(axis='x', which='both', bottom=True, top=True)
     plt.tick_params(axis='y', which='both', right=True)
+    plt.tick_params(labelsize=12)
 
     ## ------ ------ Star / Galaxy ------ ------
 
@@ -450,10 +495,11 @@ def plot_z_hist(df, missed_star, missed_quasar, missed_galaxy, correct_star, cor
     plt.xlabel(xlab)
     plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=True)
     plt.tick_params(axis='y', which='both', right=True)
+    plt.tick_params(labelsize=12)
     f.tight_layout()
     f.subplots_adjust(wspace=0, hspace=0) # Must come after tight_layout to work!
     f.savefig('z-hist'+plot_data_label+'.pdf')
-
+    '''
 
 
 
@@ -474,7 +520,7 @@ def plot_feature_hist(df, missed_star, missed_quasar, missed_galaxy, correct_sta
     xlabels = ['u', 'g', 'r', 'i', 'z', 'w1', 'w2', 'w3', 'w4'] # in case we want more concise labels.
     # Only keep magnitude features to plot (remove resolvedr feature):
     # maybe this should be an argument in more general terms...
-    plot_columns = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4']
+    plot_columns = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4']
     # If you want a plot of cmodel magnitudes use this instead:
     # plot_columns = ['cmod_u_corr', 'cmod_g_corr', 'cmod_r_corr', 'cmod_i_corr', 'cmod_z_corr', 'w1', 'w2', 'w3', 'w4']
 
@@ -712,7 +758,7 @@ def plot_compare_sets(df, missed_star, missed_quasar, missed_galaxy, correct_sta
     # define labels for the x axis
     xlabels = ['u', 'g', 'r', 'i', 'z', 'w1', 'w2', 'w3', 'w4'] # in case we want more concise labels.
     # Only keep magnitude features to plot (remove resolvedr feature):
-    plot_columns = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z', 'w1', 'w2', 'w3', 'w4']
+    plot_columns = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4']
     # If you want a plot of cmodel magnitudes use this instead:
     # plot_columns = ['cmod_u_corr', 'cmod_g_corr', 'cmod_r_corr', 'cmod_i_corr', 'cmod_z', 'w1', 'w2', 'w3', 'w4']
 
@@ -942,7 +988,7 @@ def plot_error_or_resolved_hist(df, missed_star, missed_quasar, missed_galaxy, c
 def plot_histogram_matrix(df, missed_star, missed_quasar, missed_galaxy, correct_star, correct_quasar, correct_galaxy, missed_star_as_quasar, missed_star_as_galaxy, missed_quasar_as_star, missed_quasar_as_galaxy, missed_galaxy_as_star, missed_galaxy_as_quasar, plot_data_label='unknown'):
 
     # histogram over these values:
-    mag_vals = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4']
+    mag_vals = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4']
     #mag_vals = ['cmod_u_corr', 'cmod_g_corr', 'cmod_r_corr', 'cmod_i_corr', 'cmod_z_corr', 'w1', 'w2', 'w3', 'w4']
     '''
     if mag_vals[0] in missed_star.columns:
@@ -979,7 +1025,7 @@ def plot_histogram_matrix(df, missed_star, missed_quasar, missed_galaxy, correct
         #ax.set_xticklabels([])
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
         ax.minorticks_on()
-        if (mag_val=='psf_u_corr') or (mag_val=='cmod_u_corr'):
+        if (mag_val=='psf_u') or (mag_val=='cmod_u'):
             plt.ylabel('Number of stars/quasars')
             plt.legend(frameon=False, fontsize=5, loc='upper left')
 
@@ -1019,7 +1065,7 @@ def plot_histogram_matrix(df, missed_star, missed_quasar, missed_galaxy, correct
         #ax.set_xticklabels([])
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
         ax.minorticks_on()
-        if (mag_val=='psf_u_corr') or (mag_val=='cmod_u_corr'):
+        if (mag_val=='psf_u') or (mag_val=='cmod_u'):
             plt.ylabel('Number of stars/galaxies')
             plt.legend(frameon=False, fontsize=5, loc='upper left')
 
@@ -1062,7 +1108,7 @@ def plot_histogram_matrix(df, missed_star, missed_quasar, missed_galaxy, correct
         #ax.set_xticklabels([])
         plt.tick_params(axis='x', which='both', bottom=True, top=True)
         ax.minorticks_on()
-        if (mag_val=='psf_u_corr') or (mag_val=='cmod_u_corr'):
+        if (mag_val=='psf_u') or (mag_val=='cmod_u'):
             plt.ylabel('Number of galaxies/quasars')
             plt.legend(frameon=False, fontsize=5, loc='upper left')
 
@@ -1106,7 +1152,7 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
     # Histogram of precision, recall and F1-score per band. Plus probabilities in bottom row. Plus number histogram to guide eye in top row. This plot, in all its glory, can take a few minutes to make because we are searching the original dataframe for matching indices (lots of df.loc happening) to get magnitudes for the histogram. Whilst many of these df.loc could be avoided, it leaves this function robust for tests such as removing magnitude bands from features, but still creating a histogram over that magnitude band. I think flexibility is worth the extra wait.
 
     # histogram over these values:
-    mag_vals = ['psf_u_corr', 'psf_g_corr', 'psf_r_corr', 'psf_i_corr', 'psf_z_corr', 'w1', 'w2', 'w3', 'w4']
+    mag_vals = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z', 'w1', 'w2', 'w3', 'w4']
     #mag_vals = ['cmod_u_corr', 'cmod_g_corr', 'cmod_r_corr', 'cmod_i_corr', 'cmod_z_corr', 'w1', 'w2', 'w3', 'w4']
     #mag_vals = ['psf_r_corr_u', 'psf_r_corr_g', 'psf_r_corr_i', 'psf_r_corr_z', 'psf_r_corr_w1', 'psf_r_corr_w2', 'psf_r_corr_w3', 'psf_r_corr_w4']
 
@@ -1135,7 +1181,11 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fp1 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fp2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-        p = tp/(tp+fp1+fp2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fps = fp1 + fp2
+        #fps[fps < 2] = np.nan
+        p = tp/(tp+fps)
         plt.plot(x, p, label='Stars', ls=correct_ls, color=star_c, linewidth=linewidth_hist)
         # log histogram overlaid
         x, s = histvals(df.loc[correct_star.index.values][mag_val], bins=bins_mag_hist_ugriz)
@@ -1145,7 +1195,11 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fp1 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fp2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-        p = tp/(tp+fp1+fp2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fps = fp1 + fp2
+        #fps[fps < 2] = np.nan
+        p = tp/(tp+fps)
         plt.plot(x, p, label='Galaxies', ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
         # log histogram overlaid
         x, g = histvals(df.loc[correct_galaxy.index.values][mag_val], bins=bins_mag_hist_ugriz)
@@ -1155,7 +1209,11 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fp1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fp2 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-        p = tp/(tp+fp1+fp2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fps = fp1 + fp2
+        #fps[fps < 2] = np.nan
+        p = tp/(tp+fps)
         plt.plot(x, p, label='Quasars', ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
         # log histogram overlaid
         x, q = histvals(df.loc[correct_quasar.index.values][mag_val], bins=bins_mag_hist_ugriz)
@@ -1166,7 +1224,7 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         #ax.set_xticklabels([])
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
         ax.minorticks_on()
-        if (mag_val=='psf_u_corr') or (mag_val=='cmod_u_corr'):
+        if (mag_val=='psf_u') or (mag_val=='cmod_u'):
             plt.ylabel('Precision') # y axis label for first row on left only
 
     # WISE
@@ -1176,7 +1234,11 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fp1 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fp2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
-        p = tp/(tp+fp1+fp2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fps = fp1 + fp2
+        #fps[fps < 2] = np.nan
+        p = tp/(tp+fps)
         plt.plot(x, p, ls=correct_ls, color=star_c, linewidth=linewidth_hist)
         # log histogram overlaid
         x, s = histvals(df.loc[correct_star.index.values][mag_val], bins=bins_mag_hist_w1234)
@@ -1186,7 +1248,11 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fp1 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fp2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
-        p = tp/(tp+fp1+fp2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fps = fp1 + fp2
+        #fps[fps < 2] = np.nan
+        p = tp/(tp+fps)
         plt.plot(x, p, ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
         # log histogram overlaid
         x, g = histvals(df.loc[correct_galaxy.index.values][mag_val], bins=bins_mag_hist_w1234)
@@ -1196,7 +1262,11 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fp1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fp2 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
-        p = tp/(tp+fp1+fp2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fps = fp1 + fp2
+        #fps[fps < 2] = np.nan
+        p = tp/(tp+fps)
         plt.plot(x, p, ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
         # log histogram overlaid
         x, q = histvals(df.loc[correct_quasar.index.values][mag_val], bins=bins_mag_hist_w1234)
@@ -1220,21 +1290,33 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn1 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-        r = tp/(tp+fn1+fn2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fns = fn1 + fn2
+        #fps[fps < 2] = np.nan
+        r = tp/(tp+fns)
         plt.plot(x, r, label='Star', ls=correct_ls, color=star_c, linewidth=linewidth_hist)
 
         # ------ galaxy ------
         x, tp = histvals_o(df.loc[correct_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-        r = tp/(tp+fn1+fn2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fns = fn1 + fn2
+        #fps[fps < 2] = np.nan
+        r = tp/(tp+fns)
         plt.plot(x, r, label='Galaxy', ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
 
         # ------ quasar ------
         x, tp = histvals_o(df.loc[correct_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn1 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn2 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-        r = tp/(tp+fn1+fn2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fns = fn1 + fn2
+        #fps[fps < 2] = np.nan
+        r = tp/(tp+fns)
         plt.plot(x, r, label='Quasar', ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
 
         if autoscale == False:
@@ -1243,7 +1325,7 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         plt.tick_params(axis='x', which='both', bottom=True, top=True, labelbottom=False)
         ax.minorticks_on()
 
-        if (mag_val=='psf_u_corr') or (mag_val=='cmod_u_corr'):
+        if (mag_val=='psf_u') or (mag_val=='cmod_u'):
             plt.ylabel('Recall') # y axis label for middle row, shown on left only
             plt.legend(frameon=False, fontsize=8) # legend box for whole plot middle row left only
 
@@ -1254,21 +1336,33 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, tp = histvals_o(df.loc[correct_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn1 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
-        r = tp/(tp+fn1+fn2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fns = fn1 + fn2
+        #fps[fps < 2] = np.nan
+        r = tp/(tp+fns)
         plt.plot(x, r, label='Star', ls=correct_ls, color=star_c, linewidth=linewidth_hist)
 
         # ------ galaxy ------
         x, tp = histvals_o(df.loc[correct_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
-        r = tp/(tp+fn1+fn2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fns = fn1 + fn2
+        #fps[fps < 2] = np.nan
+        r = tp/(tp+fns)
         plt.plot(x, r, label='Galaxy', ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
 
         # ------ quasar ------
         x, tp = histvals_o(df.loc[correct_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn1 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn2 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
-        r = tp/(tp+fn1+fn2)
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
+        fns = fn1 + fn2
+        #fps[fps < 2] = np.nan
+        r = tp/(tp+fns)
         plt.plot(x, r, label='Quasar', ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
 
         if autoscale == False:
@@ -1290,6 +1384,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, fn1 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         # F1
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
         f1 = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
         plt.plot(x, f1, ls=correct_ls, color=star_c, linewidth=linewidth_hist)
 
@@ -1302,6 +1398,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, fn1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         # F1
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
         f1 = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
         plt.plot(x, f1, ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
 
@@ -1314,6 +1412,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, fn1 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         x, fn2 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
         # F1
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
         f1 = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
         plt.plot(x, f1, ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
         #plt.legend(frameon=False)
@@ -1364,7 +1464,7 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         plt.tick_params(axis='x', which='both', bottom=True, top=True)
         ax.minorticks_on()
 
-        if (mag_val=='psf_u_corr') or (mag_val=='cmod_u_corr'):
+        if (mag_val=='psf_u') or (mag_val=='cmod_u'):
             plt.ylabel('F1 score')
             plt.legend(frameon=False, fontsize=6, loc='lower right')
 
@@ -1380,6 +1480,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, fn1 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         # F1
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
         f1 = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
         plt.plot(x, f1, ls=correct_ls, color=star_c, linewidth=linewidth_hist)
 
@@ -1392,6 +1494,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, fn1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         # F1
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
         f1 = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
         plt.plot(x, f1, ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
 
@@ -1404,6 +1508,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
         x, fn1 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         x, fn2 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_w1234, density=density)
         # F1
+        # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+        tp[tp < 2] = np.nan
         f1 = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
         plt.plot(x, f1, ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
 
@@ -1471,8 +1577,8 @@ def plot_histogram_matrix_f1(df, missed_star, missed_quasar, missed_galaxy, corr
 
 
 
-    # Metrics as a function of psudo-magnitude (1-D transform of 10-D feature space)
-def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_star, correct_quasar, correct_galaxy, missed_star_as_quasar, missed_star_as_galaxy, missed_quasar_as_star, missed_quasar_as_galaxy, missed_galaxy_as_star, missed_galaxy_as_quasar, mag_val='psf_r_corr', plot_data_label='unknown'):
+    # Metrics as a function of various variables
+def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_star, correct_quasar, correct_galaxy, missed_star_as_quasar, missed_star_as_galaxy, missed_quasar_as_star, missed_quasar_as_galaxy, missed_galaxy_as_star, missed_galaxy_as_quasar, mag_val='psf_r', plot_data_label='unknown'):
     print('Making metric curve plot...')
     # check some values
     #print(df['feature_1D'].max())
@@ -1483,8 +1589,8 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     if mag_val=='feature_1D':
         bins_mag_hist_ugriz = np.linspace(-10,28,100) # for 1d feature
         xlabels = '1D feature'
-    if mag_val=='psf_r_corr':
-        bins_mag_hist_ugriz = np.linspace(8,28,100) # for psf r magnitude
+    if mag_val=='psf_r':
+        bins_mag_hist_ugriz = np.linspace(9,26,100) # for psf r magnitude
         xlabels = 'PSF r magnitude'
     if mag_val=='psferr_r':
         bins_mag_hist_ugriz = bins_err # for psf r magnitude error
@@ -1517,11 +1623,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     x, tp = histvals_o(df.loc[correct_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fp1 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fp2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-
-    ps = tp/(tp+fp1+fp2)
-    #yerr = 1/np.sqrt(tp+fp1+fp2)
-    #perr[perr > 0.25] = 0
-    pserr = ( zsig/( (tp+fp1+fp2) + zsig**2) ) * ( np.sqrt( (tp*(fp1+fp2) / (tp+fp1+fp2)) + zsig/4 ) ) # wilson score interval
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fps = fp1 + fp2
+    #fps[fps < 2] = np.nan
+    ps = tp/(tp+fps)
+    pserr = ( zsig/( (tp+fps) + zsig**2) ) * ( np.sqrt( (tp*(fps) / (tp+fps)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, ps, label='Star', ls=correct_ls, color=star_c, linewidth=linewidth_hist)
     plt.fill_between(x, ps+pserr, ps-pserr, color=star_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1529,10 +1636,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     x, tp = histvals_o(df.loc[correct_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fp1 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fp2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fps = fp1 + fp2
+    #fps[fps < 2] = np.nan
     pg = tp/(tp+fp1+fp2)
-    pgerr = ( zsig/( (tp+fp1+fp2) + zsig**2) ) * ( np.sqrt( (tp*(fp1+fp2) / (tp+fp1+fp2)) + zsig/4 ) ) # wilson score interval
-    #yerr=1/np.sqrt(tp+fp1+fp2)
-    #yerr[yerr > 0.25] = 0
+    pgerr = ( zsig/( (tp+fps) + zsig**2) ) * ( np.sqrt( (tp*(fps) / (tp+fps)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, pg, label='Galaxy', ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
     plt.fill_between(x, pg+pgerr, pg-pgerr, color=galaxy_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1540,10 +1649,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     x, tp = histvals_o(df.loc[correct_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fp1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fp2 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fps = fp1 + fp2
+    #fps[fps < 2] = np.nan
     pq = tp/(tp+fp1+fp2)
-    #yerr=1/np.sqrt(tp+fp1+fp2)
-    #yerr[yerr > 0.25] = 0
-    pqerr = ( zsig/( (tp+fp1+fp2) + zsig**2) ) * ( np.sqrt( (tp*(fp1+fp2) / (tp+fp1+fp2)) + zsig/4 ) ) # wilson score interval
+    pqerr = ( zsig/( (tp+fps) + zsig**2) ) * ( np.sqrt( (tp*(fps) / (tp+fps)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, pq, label='Quasar', ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
     plt.fill_between(x, pq+pqerr, pq-pqerr, color=quasar_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1579,10 +1690,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     x, tp = histvals_o(df.loc[correct_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn1 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-    rs = tp/(tp+fn1+fn2)
-    #yerr=1/np.sqrt(tp+fn1+fn2)
-    #yerr[yerr > 0.25] = 0
-    rserr = ( zsig/( (tp+fn1+fn2) + zsig**2) ) * ( np.sqrt( (tp*(fn1+fn2) / (tp+fn1+fn2)) + zsig/4 ) ) # wilson score interval
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fns = fn1 + fn2
+    fns[fns < 2] = np.nan
+    rs = tp/(tp+fns)
+    rserr = ( zsig/( (tp+fns) + zsig**2) ) * ( np.sqrt( (tp*(fns) / (tp+fns)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, rs, label='Star', ls=correct_ls, color=star_c, linewidth=linewidth_hist)
     plt.fill_between(x, rs+rserr, rs-rserr, color=star_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1590,10 +1703,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     x, tp = histvals_o(df.loc[correct_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-    rg = tp/(tp+fn1+fn2)
-    #yerr=1/np.sqrt(tp+fn1+fn2)
-    #yerr[yerr > 0.25] = 0
-    rgerr = ( zsig/( (tp+fn1+fn2) + zsig**2) ) * ( np.sqrt( (tp*(fn1+fn2) / (tp+fn1+fn2)) + zsig/4 ) ) # wilson score interval
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fns = fn1 + fn2
+    fns[fns < 2] = np.nan
+    rg = tp/(tp+fns)
+    rgerr = ( zsig/( (tp+fns) + zsig**2) ) * ( np.sqrt( (tp*(fns) / (tp+fns)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, rg, label='Galaxy', ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
     plt.fill_between(x, rg+rgerr, rg-rgerr, color=galaxy_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1601,10 +1716,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     x, tp = histvals_o(df.loc[correct_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn1 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn2 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
-    rq = tp/(tp+fn1+fn2)
-    #yerr=1/np.sqrt(tp+fn1+fn2)
-    #yerr[yerr > 0.25] = 0
-    rqerr = ( zsig/( (tp+fn1+fn2) + zsig**2) ) * ( np.sqrt( (tp*(fn1+fn2) / (tp+fn1+fn2)) + zsig/4 ) ) # wilson score interval
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fns = fn1 + fn2
+    fns[fns < 2] = np.nan
+    rq = tp/(tp+fns)
+    rqerr = ( zsig/( (tp+fns) + zsig**2) ) * ( np.sqrt( (tp*(fns) / (tp+fns)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, rq, label='Quasar', ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
     plt.fill_between(x, rq+rqerr, rq-rqerr, color=quasar_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1643,11 +1760,15 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     # Recall
     x, fn1 = histvals_o(df.loc[missed_star_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn2 = histvals_o(df.loc[missed_star_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
+    # don't plot bins with single entry to stop it defaulting to 0.33
+    tp[tp < 2] = np.nan
+    fns = fn1 + fn2
+    fps = fp1 + fp2
     # F1
-    f1s = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
+    f1s = 2*tp / (2*tp + fps + fns)
     #yerr=1/np.sqrt(tp + fp1+fp2 + fn1+fn2)
     #yerr[yerr > 0.25] = 0
-    f1serr = ( zsig/( (tp+fp1+fp2+fn1+fn2) + zsig**2) ) * ( np.sqrt( (tp*(fp1+fp2+fn1+fn2) / (tp+fp1+fp2+fn1+fn2)) + zsig/4 ) ) # wilson score interval
+    f1serr = ( zsig/( (tp+fps+fns) + zsig**2) ) * ( np.sqrt( (tp*(fps+fns) / (tp+fps+fns)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, f1s, label='Star', ls=correct_ls, color=star_c, linewidth=linewidth_hist)
     plt.fill_between(x, f1s+f1serr, f1s-f1serr, color=star_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1659,11 +1780,15 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     # Recall
     x, fn1 = histvals_o(df.loc[missed_galaxy_as_quasar.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn2 = histvals_o(df.loc[missed_galaxy_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
+    # don't plot bins with single entry to stop it defaulting to 0.33 or encountering divide by zero
+    tp[tp < 2] = np.nan
+    fns = fn1 + fn2
+    fps = fp1 + fp2
     # F1
-    f1g = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
+    f1g = 2*tp / (2*tp + fps + fns)
     #yerr=1/np.sqrt(tp + fp1+fp2 + fn1+fn2)
     #yerr[yerr > 0.25] = 0
-    f1gerr = ( zsig/( (tp+fp1+fp2+fn1+fn2) + zsig**2) ) * ( np.sqrt( (tp*(fp1+fp2+fn1+fn2) / (tp+fp1+fp2+fn1+fn2)) + zsig/4 ) ) # wilson score interval
+    f1gerr = ( zsig/( (tp+fps+fns) + zsig**2) ) * ( np.sqrt( (tp*(fps+fns) / (tp+fps+fns)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, f1g, label='Galaxy', ls=correct_ls, color=galaxy_c, linewidth=linewidth_hist)
     plt.fill_between(x, f1g+f1gerr, f1g-f1gerr, color=galaxy_c, step='mid', linewidth=0, alpha=alpha)
 
@@ -1675,10 +1800,12 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     # Recall
     x, fn1 = histvals_o(df.loc[missed_quasar_as_star.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
     x, fn2 = histvals_o(df.loc[missed_quasar_as_galaxy.index.values][mag_val].values, bins=bins_mag_hist_ugriz, density=density)
+    # don't plot bins with single entry to stop it defaulting to 0.33
+    tp[tp < 2] = np.nan
+    fns = fn1 + fn2
+    fps = fp1 + fp2
     # F1
-    f1q = 2*tp / (2*tp + fp1+fp2 + fn1+fn2)
-    #yerr=1/np.sqrt(tp + fp1+fp2 + fn1+fn2)
-    #yerr[yerr > 0.25] = 0
+    f1q = 2*tp / (2*tp + fps + fns)
     f1qerr = ( zsig/( (tp+fp1+fp2+fn1+fn2) + zsig**2) ) * ( np.sqrt( (tp*(fp1+fp2+fn1+fn2) / (tp+fp1+fp2+fn1+fn2)) + zsig/4 ) ) # wilson score interval
     plt.plot(x, f1q, label='Quasar', ls=correct_ls, color=quasar_c, linewidth=linewidth_hist)
     plt.fill_between(x, f1q+f1qerr, f1q-f1qerr, color=quasar_c, step='mid', linewidth=0, alpha=alpha)
@@ -1755,15 +1882,15 @@ def plot_metric_curves(df, missed_star, missed_quasar, missed_galaxy, correct_st
     #f.suptitle(plot_data_label, fontsize=7, y=0.995) # if you want the label as a super title above plot
     f.tight_layout()
     #f.subplots_adjust(wspace=0, hspace=0) # Must come after tight_layout to work!
-    f.savefig('metric-curves'+mag_val+'-'+plot_data_label+'.pdf', dpi=600)
+    f.savefig('metric-curves-'+mag_val+plot_data_label+'.pdf', dpi=100)
 
     # save metric scores to disk as dictionary for later use in SDSS_ML_plotmaglim.py
     metrics = {'x':x_tmp, 'g':g, 's':s, 'q':q, 'pg':pg, 'rg':rg, 'f1g':f1g, 'pgerr':pgerr, 'rgerr':rgerr, 'f1gerr':f1gerr, 'pq':pq, 'rq':rq, 'f1q':f1q, 'pqerr':pqerr, 'rqerr':rqerr, 'f1qerr':f1qerr, 'ps':ps, 'rs':rs, 'f1s':f1s, 'pserr':pserr, 'rserr':rserr, 'f1serr':f1serr}
-    probs = {'g_probs':g_probs, 's_probs':s_probs, 'q_probs':q_probs}
+    #probs = {'g_probs':g_probs, 's_probs':s_probs, 'q_probs':q_probs}
     metrics_df = pd.DataFrame(metrics)
-    probs_df = pd.DataFrame(probs)
+    #probs_df = pd.DataFrame(probs)
     save_obj(metrics_df, 'metrics_df_'+plot_data_label)
-    save_obj(probs_df, 'probs_df_'+plot_data_label)
+    #save_obj(probs_df, 'probs_df_'+plot_data_label)
 
 
 
@@ -1929,22 +2056,15 @@ def plot_probs_hexscatter(df, missed_star, missed_quasar, missed_galaxy, correct
     # --- --- --- scatter plot of all sources with histogram overlaid ---  ---  ---
 
     # Select plot values:
-    val = 'psf_r_corr'
+    val = 'psf_r'
     #val = 'feature_1D'
-    # consistent colours for hexbin
-    colors_g = [(1,1,1), (112/255,128/255,144/255)]
-    cmap_g = make_cmap(colors_g)
-    colors_q = [(1,1,1), (255/255,105/255,180/255)]
-    cmap_q = make_cmap(colors_q)
-    colors_s = [(1,1,1), (30/255,144/255,255/255)]
-    cmap_s = make_cmap(colors_s)
 
-    colors_g2 = [(1,1,1), (0/255,0/255,0/255)] # black
-    cmap_g2 = make_cmap(colors_g2)
-    colors_q2 = [(1,1,1), (0/255,0/255,255/255)] # blue
-    cmap_q2 = make_cmap(colors_q2)
-    colors_s2 = [(1,1,1), (255/255,165/255,0/255)] # orange
-    cmap_s2 = make_cmap(colors_s2)
+    #colors_g2 = [(1,1,1), (0/255,0/255,0/255)] # black
+    #cmap_g2 = make_cmap(colors_g2)
+    #colors_q2 = [(1,1,1), (0/255,0/255,255/255)] # blue
+    #cmap_q2 = make_cmap(colors_q2)
+    #colors_s2 = [(1,1,1), (255/255,165/255,0/255)] # orange
+    #cmap_s2 = make_cmap(colors_s2)
 
     gridsize = (60,30) # getting the exact ratio is not trivial... trial and error to get symmetrical hexagons, ensuring binsize is 0.01.
     marker_c = '.'
@@ -1967,14 +2087,14 @@ def plot_probs_hexscatter(df, missed_star, missed_quasar, missed_galaxy, correct
     plt.hexbin(x1, y1, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_g)
     im=plt.hexbin(x1, y1, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_g) # for colourbar axs later
     #plt.colorbar(orientation='horizontal', pad=0.01, aspect=40, shrink=1.0, panchor=(0.5, 2.0), anchor=(0.5,1.0))
-    x1, y1 = histvals(df.loc[correct_galaxy.index.values].psf_r_corr.values, bins=bins, density=density)
+    x1, y1 = histvals(df.loc[correct_galaxy.index.values].psf_r.values, bins=bins, density=density)
     plt.plot(x1, y1/y1.max(), label='Histogram of correct galaxies', ls=correct_ls, linewidth=linewidth, color=galaxy_c)
     # missed galaxies
     x2 = df.loc[missed_galaxy.index.values][val].values
     y2 = df.loc[missed_galaxy.index.values].prob_g.values
     plt.scatter(x2, y2, marker=marker_m, color=galaxy_c, s=s) # missed galaxies
     #plt.hexbin(x2, y2, gridsize=gridsize, bins='log', linewidths=linewidths, label='missed galaxies', cmap=cmap_g2)
-    x2, y2 = histvals(df.loc[missed_galaxy.index.values].psf_r_corr.values, bins=bins, density=density)
+    x2, y2 = histvals(df.loc[missed_galaxy.index.values].psf_r.values, bins=bins, density=density)
     plt.plot(x2, y2/(0.1*y1.max()), label='Histogram of missed galaxies (x10)', ls=missed_ls, linewidth=linewidth, color=galaxy_c)
 
     plt.xlim(15,25)
@@ -2021,13 +2141,13 @@ def plot_probs_hexscatter(df, missed_star, missed_quasar, missed_galaxy, correct
     #plt.scatter(x1, y1, label='correct quasars', marker=marker_c, color=quasar_c, s=s)
     plt.hexbin(x1, y1, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_q)
     im = plt.hexbin(x1, y1, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_q) # for cbar
-    x1, y1 = histvals(df.loc[correct_quasar.index.values].psf_r_corr.values, bins=bins, density=density)
+    x1, y1 = histvals(df.loc[correct_quasar.index.values].psf_r.values, bins=bins, density=density)
     plt.plot(x1, y1/y1.max(), label='histogram of correct quasars', ls=correct_ls, linewidth=linewidth, color=quasar_c)
     # missed quasars
     x2 = df.loc[missed_quasar.index.values][val].values
     y2 = df.loc[missed_quasar.index.values].prob_q.values
     plt.scatter(x2, y2, marker=marker_m, color=quasar_c, s=s)
-    x2, y2 = histvals(df.loc[missed_quasar.index.values].psf_r_corr.values, bins=bins, density=density)
+    x2, y2 = histvals(df.loc[missed_quasar.index.values].psf_r.values, bins=bins, density=density)
     plt.plot(x2, y2/y1.max(), label='histogram of missed quasars', ls=missed_ls, linewidth=linewidth, color=quasar_c)
     plt.xlabel('PSF r magnitude')
     # ticks on both sides of plot
@@ -2068,18 +2188,19 @@ def plot_probs_hexscatter(df, missed_star, missed_quasar, missed_galaxy, correct
     # correct stars
     plt.sca(axs[2])
     bins = np.linspace(8,26,150)
+    #gridsize = (210,30) # larger gridsize for stars since xrange is larger
     x1 = df.loc[correct_star.index.values][val].values
     y1 = df.loc[correct_star.index.values].prob_s.values
     #plt.scatter(x1, y1, label='correct stars', marker=marker_c, color=star_c, s=s)
     plt.hexbin(x1, y1, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_s)
     im = plt.hexbin(x1, y1, gridsize=gridsize, bins='log', linewidths=linewidths, cmap=cmap_s) # for cbar
-    x1, y1 = histvals(df.loc[correct_star.index.values].psf_r_corr.values, bins=bins, density=density)
+    x1, y1 = histvals(df.loc[correct_star.index.values].psf_r.values, bins=bins, density=density)
     plt.plot(x1, y1/y1.max(), label='Histogram of correct stars', ls=correct_ls, linewidth=linewidth, color=star_c)
     # missed stars
     x2 = df.loc[missed_star.index.values][val].values
     y2 = df.loc[missed_star.index.values].prob_s.values
     plt.scatter(x2, y2, marker=marker_m, color=star_c, s=s)
-    x2, y2 = histvals(df.loc[missed_star.index.values].psf_r_corr.values, bins=bins, density=density)
+    x2, y2 = histvals(df.loc[missed_star.index.values].psf_r.values, bins=bins, density=density)
     plt.plot(x2, y2/y1.max(), label='Histogram of missed stars', ls=missed_ls, linewidth=linewidth, color=star_c)
 
     plt.xlim(8,26)
@@ -2148,13 +2269,24 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
 
     # Set some defaults for all plots
     mpl.rcParams.update({'font.size': 8})
-    mpl.rcParams.update({'figure.dpi': 400})
+    mpl.rcParams.update({'figure.dpi': 100})
+
     quasar_c = 'hotpink'
     star_c = 'dodgerblue'
-    galaxy_c = 'slategrey'
-    quasar_c2 = 'black'
-    star_c2 = 'blue'
-    galaxy_c2 = 'orange'
+    #galaxy_c = 'slategrey' # grey/pink colourblind isn't good
+    galaxy_c = (101/255,236/255,101/255) # alexgreen
+    # consistent colours for hexbin colourscale
+    #colors_g = [(1,1,1), (112/255,128/255,144/255)] # slategrey
+    #cmap_g = make_cmap(colors_g)
+    colors_g = [(1,1,1), (101/255,236/255,101/255)] # springgreen
+    cmap_g = make_cmap(colors_g)
+    colors_q = [(1,1,1), (255/255,105/255,180/255)]
+    cmap_q = make_cmap(colors_q)
+    colors_s = [(1,1,1), (30/255,144/255,255/255)]
+    cmap_s = make_cmap(colors_s)
+    quasar_c2 = 'black' # not used
+    star_c2 = 'blue' # not used
+    galaxy_c2 = 'orange' # not used
     correct_ls = '-'
     missed_ls = '--'
     linewidth = 1
@@ -2196,12 +2328,11 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     #feature_columns = sdss_colours + wise_colours + ['resolvedr']
 
     # set combination of features used from here on:
-    feature_columns = psf_ext + wise + ['resolvedr']
+    feature_columns = psf + wise #+ ['resolvedr']
 
     # ------ Load data ------
     print('Loading data...')
     # Load in models and data outputted from the machine learning code (SDSS_ML.py)
-    df = load_obj('df')
     pipeline = load_obj('rf_pipeline')
     #data_prep_dict_boss = load_obj('data_prep_dict_boss')
     #data_prep_dict_sdss = load_obj('data_prep_dict_sdss')
@@ -2209,18 +2340,8 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     #classes_pred_boss = load_obj('classes_pred_boss')
     #classes_pred_sdss = load_obj('classes_pred_sdss')
     classes_pred_all = load_obj('classes_pred_all')
-    classes_pred_all_proba = load_obj('classes_pred_all_proba')
 
-    # Get predicted classes from the RF classifier:
-    df_predclass = pd.DataFrame(classes_pred_all, index=data_prep_dict_all['features_test'].index, columns=['class_pred'])
-    # Append probabilities to the original df for test data:
-    df = df.join(df_predclass, how='left')
-    # Get probabilities from the RF classifier:
-    df_proba = pd.DataFrame(classes_pred_all_proba, index=data_prep_dict_all['features_test'].index, columns=['prob_g', 'prob_q', 'prob_s'])
-    # Append probabilities to the original df for test data:
-    df = df.join(df_proba, how='left')
-
-
+    df = load_obj('df_spec_classprobs')
 
     # Sorting correct and misclassified objects. I know there are a lot of extremely explicit arguments. It means we can produce plots selectively and intuitively.
 
@@ -2232,7 +2353,7 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     # SDSS
     #data_sdss, missed_star_sdss, missed_quasar_sdss, missed_galaxy_sdss, correct_star_sdss, correct_quasar_sdss, correct_galaxy_sdss, missed_star_as_quasar_sdss, missed_star_as_galaxy_sdss, missed_quasar_as_star_sdss, missed_quasar_as_galaxy_sdss, missed_galaxy_as_star_sdss, missed_galaxy_as_quasar_sdss = prepare_classifications(data_prep_dict_sdss, classes_pred_sdss)
 
-    # ALL
+    # ALL - always run this function before doing any plots.
     data_all, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all = prepare_classifications(data_prep_dict_all, classes_pred_all, ttsplit=True)
 
     # data_samp, missed_star_samp, missed_quasar_samp, missed_galaxy_samp, correct_star_samp, correct_quasar_samp, correct_galaxy_samp, missed_star_as_quasar_samp, missed_star_as_galaxy_samp, missed_quasar_as_star_samp, missed_quasar_as_galaxy_samp, missed_galaxy_as_star_samp, missed_galaxy_as_quasar_samp = prepare_classifications(data_prep_dict_samp, classes_pred_samp, ttsplit=False)
@@ -2249,23 +2370,23 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     print('Making plots...')
 
     # plot training vs F1 score. files stored on disk from SDSS_ML.py are given as inputs
-    #plot_trainvsf1('train_vs_f1score', 'train_vs_f1score_sampleG', 'train_vs_precision', 'train_vs_precision_sampleG', 'train_vs_recall', 'train_vs_recall_sampleG')
+    plot_trainvsf1('train_vs_f1score', 'train_vs_f1score_sampleG', 'train_vs_precision', 'train_vs_precision_sampleG', 'train_vs_recall', 'train_vs_recall_sampleG')
 
     # plot feature ranking
     # rename features for nice x-axis. Change if using different features
-    #feature_labels = ['u', 'g', 'r', 'i', 'z', 'w1', 'w2', 'w3', 'w4', '$\mathrm{resolved}_\mathrm{r}$']
-    #plot_feature_ranking(pipeline, feature_labels)
+    feature_labels = ['u', 'g', 'r', 'i', 'z', 'w1', 'w2', 'w3', 'w4', '$\mathrm{resolved}_\mathrm{r}$']
+    plot_feature_ranking(pipeline, feature_labels)
 
 
     # ------ All objects class/instrument histogram ------
-    #plot_basic_hists(df)
+    plot_basic_hists(df)
 
-    #plot_z_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
+    plot_z_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
 
     # ------ Feature plots ------
 
     # ALL star/quasar, star/galaxy, quasar/galaxy feature plots for correct and misclassified objects
-    #plot_feature_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
+    plot_feature_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
 
     # BOSS: star/quasar, star/galaxy, quasar/galaxy feature plots for correct and misclassified objects
     #plot_feature_hist(df, missed_star_boss, missed_quasar_boss, missed_galaxy_boss, correct_star_boss, correct_quasar_boss, correct_galaxy_boss, missed_star_as_quasar_boss, missed_star_as_galaxy_boss, missed_quasar_as_star_boss, missed_quasar_as_galaxy_boss, missed_galaxy_as_star_boss, missed_galaxy_as_quasar_boss, plot_data_label='BOSS')
@@ -2273,9 +2394,9 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     # SDSS: star/quasar, star/galaxy, quasar/galaxy feature plots for correct and misclassified objects
     #plot_feature_hist(df, missed_star_sdss, missed_quasar_sdss, missed_galaxy_sdss, correct_star_sdss, correct_quasar_sdss, correct_galaxy_sdss, missed_star_as_quasar_sdss, missed_star_as_galaxy_sdss, missed_quasar_as_star_sdss, missed_quasar_as_galaxy_sdss, missed_galaxy_as_star_sdss, missed_galaxy_as_quasar_sdss, plot_data_label='SDSS')
 
-    #plot_error_or_resolved_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, val='psferr_r', plot_data_label='')
+    plot_error_or_resolved_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, val='psferr_r', plot_data_label='')
 
-    #plot_error_or_resolved_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, val='resolvedr', plot_data_label='NoResolvedr')
+    #plot_error_or_resolved_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, val='resolvedr', plot_data_label='')
 
     # ------ Compare SDSS/BOSS ------
 
@@ -2286,7 +2407,7 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     # These take a bit longer to run because we are searching through the original df to grab features, just in case we decide to remove features from the training but still include them in these histogram plots.
 
     # ALL
-    #plot_histogram_matrix(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
+    plot_histogram_matrix(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
 
     # BOSS
     #plot_histogram_matrix(df, missed_star_boss, missed_quasar_boss, missed_galaxy_boss, correct_star_boss, correct_quasar_boss, correct_galaxy_boss, missed_star_as_quasar_boss, missed_star_as_galaxy_boss, missed_quasar_as_star_boss, missed_quasar_as_galaxy_boss, missed_galaxy_as_star_boss, missed_galaxy_as_quasar_boss, plot_data_label='BOSS')
@@ -2297,7 +2418,7 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     # ------ Histogram feature matrix of precision recall f1 probabilities ------
     # saved as: hist-magfeatures-metrics-*.pdf
     # ALL
-    #plot_histogram_matrix_f1(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='', autoscale=False, plot_prob=True)
+    plot_histogram_matrix_f1(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='', autoscale=False, plot_prob=True)
 
     # BOSS
     #plot_histogram_matrix_f1(df, missed_star_boss, missed_quasar_boss, missed_galaxy_boss, correct_star_boss, correct_quasar_boss, correct_galaxy_boss, missed_star_as_quasar_boss, missed_star_as_galaxy_boss, missed_quasar_as_star_boss, missed_quasar_as_galaxy_boss, missed_galaxy_as_star_boss, missed_galaxy_as_quasar_boss, plot_data_label='BOSS', autoscale=False, plot_prob=True)
@@ -2308,21 +2429,22 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
 
     # ------ Metric curves - Histogram precision recall f1 1D feature ------
     # to investigate magnitude limit and make plots, run this function a few times
-    '''
-    plot_metric_curves(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, mag_val='psf_r_corr', plot_data_label='')
+
+    plot_metric_curves(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, mag_val='psf_r', plot_data_label='')
 
     plot_metric_curves(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, mag_val='feature_1D', plot_data_label='')
 
     plot_metric_curves(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, mag_val='psferr_r', plot_data_label='')
 
     plot_metric_curves(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, mag_val='resolvedr', plot_data_label='')
-    '''
+    #exit()
+
 
     # ------ Probability of classification per class - Hexbin scatter hist ------
 
-    #plot_probs_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
+    plot_probs_hist(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='test')
 
-    #plot_probs_hexscatter(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
+    plot_probs_hexscatter(df, missed_star_all, missed_quasar_all, missed_galaxy_all, correct_star_all, correct_quasar_all, correct_galaxy_all, missed_star_as_quasar_all, missed_star_as_galaxy_all, missed_quasar_as_star_all, missed_quasar_as_galaxy_all, missed_galaxy_as_star_all, missed_galaxy_as_quasar_all, plot_data_label='')
 
 
     # End

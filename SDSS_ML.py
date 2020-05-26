@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import matplotlib as mpl
-mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
+#mpl.use('TKAgg',warn=False, force=True) #set MPL backend.
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import pickle #save/load python data objects (dictionaries/arrays)
@@ -50,6 +50,8 @@ from sklearn.decomposition import PCA
 # drop_duplicates
 # train_vs_f1score
 # crossvalidation_hyperparms
+# load_and_clean_data
+
 
 
     # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
@@ -106,12 +108,12 @@ def prepare_data(data, feature_columns, train_percent=0.5, ttsplit=True, mag_spl
     if ttsplit==True and mag_split==True:
         if ttbelow==True:
             print('Imposing magnitude cut of cmod_r={0}, performing test/train split below this...'.format(mag_lim))
-            data_tt = data[data.psf_r_corr < mag_lim] # split out brighter fraction of data before tt split
-            data_new = data[data.psf_r_corr > mag_lim] # set aside fraction of fainter new sources (e.g. simulating deeper data)
+            data_tt = data[data.psf_r < mag_lim] # split out brighter fraction of data before tt split
+            data_new = data[data.psf_r > mag_lim] # set aside fraction of fainter new sources (e.g. simulating deeper data)
         if ttbelow==False:
             print('Imposing magnitude cut of cmod_r={0}, performing test/train split above this...'.format(mag_lim))
-            data_tt = data[data.psf_r_corr > mag_lim] # split out fainter fraction of data before tt split
-            data_new = data[data.psf_r_corr < mag_lim] # set aside fraction of brighter sources
+            data_tt = data[data.psf_r > mag_lim] # split out fainter fraction of data before tt split
+            data_new = data[data.psf_r < mag_lim] # set aside fraction of brighter sources
         all_features = data_tt[[*feature_columns]]
         all_classes = data_tt['class']
         print('Number of sources not in tt-split: {0}'.format(len(data_new)))
@@ -461,6 +463,100 @@ def crossvalidation_hyperparms():
 
 
 
+    # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+
+
+
+
+
+
+def load_and_clean_data(file, feature_columns):
+    #df = pd.read_csv('SDSS_spec_xmwise.csv')
+    df = pd.read_csv(file)
+    print(df['class'].value_counts())
+    print(len(df))
+    df = drop_duplicates(df)
+    print('after removing duplicate wise matches:')
+    print(df['class'].value_counts())
+    print(len(df))
+
+    #Filter the data to remove bad entires
+    df=df[(df.cmod_u>0.0) & (df.cmod_g>0.0) & (df.cmod_r>0.0) & (df.cmod_i>0.0) & (df.cmod_z>0.0)] #remove objects where cmodel flux fit has given negative value (118 entires). In practise this is the same as using psf. -9999 values present.
+    print('after removing cmod -9999s')
+    print(len(df))
+    #print(df.zwarning.value_counts())
+    df=df[(df.zwarning==0) | (df.zwarning==16)] # | (df.zwarning==4)] #removes 81314 objects with poor quality spectra. Spectra with zWarning equal to zero have no known problems. zWarning==16 (MANY_OUTLIERS) is only ever set in the data taken with the SDSS spectrograph, not the BOSS spectrograph (the SDSS-I, -II and SEGUE-2 surveys). If it is set, that usually indicates a high signal-to-noise spectrum or broad emission lines in a galaxy; that is, MANY_OUTLIERS only rarely signifies a real error.
+    print('after removing zwar flags')
+    print(len(df))
+    #zWarning==16 keeps 4111 objects (4113 excluding the cmod_ conditions above)
+    df=df[(df.w1<50) & (df.w2<50) & (df.w3<50) & (df.w4<50)]
+    #df=df[(df.w1<50) & (df.w2<50)]
+    print('after removing wise 9999s')
+    print(len(df))
+
+    #df now Left with 2,457,349 objects. 81432 removed.
+    print('After filtering, data frame has shape: {0}'.format(df.shape))
+    print('SDSS: \n{0}'.format(df[df.instrument=='SDSS']['class'].value_counts()))
+    print('BOSS: \n{0}'.format(df[df.instrument=='BOSS']['class'].value_counts()))
+    print('Final count: \n')
+    print(df['class'].value_counts())
+
+
+
+    #Create columns corrected for galactic extinction
+    '''
+    df['cmod_u_corr'] = df.cmod_u - df.ext_u
+    df['cmod_g_corr'] = df.cmod_g - df.ext_g
+    df['cmod_r_corr'] = df.cmod_r - df.ext_r
+    df['cmod_i_corr'] = df.cmod_i - df.ext_i
+    df['cmod_z_corr'] = df.cmod_z - df.ext_z
+    df['psf_u_corr'] = df.psf_u - df.ext_u
+    df['psf_g_corr'] = df.psf_g - df.ext_g
+    df['psf_r_corr'] = df.psf_r - df.ext_r
+    df['psf_i_corr'] = df.psf_i - df.ext_i
+    df['psf_z_corr'] = df.psf_z - df.ext_z
+    '''
+    #df['resolvedu'] = np.sqrt((df.psf_u_corr - df.cmod_u_corr)**2)
+    #df['resolvedg'] = np.sqrt((df.psf_g_corr - df.cmod_g_corr)**2)
+    df['resolvedr'] = np.sqrt((df.psf_r - df.cmod_r)**2)
+    #df['resolvedi'] = np.sqrt((df.psf_i_corr - df.cmod_i_corr)**2)
+    #df['resolvedz'] = np.sqrt((df.psf_z_corr - df.cmod_z_corr)**2)
+    #df_zwar4 = df[df.zwarning==4]
+    #print(df.nlargest(20, 'ext_r').ext_r)
+    # extinction correction checks
+    #print('sources with ext greater than 1: {0}'.format(len(df[df.ext_r > 1])))
+    #print('sources with ext greater than 5: {0}'.format(len(df[df.ext_r > 5])))
+    #print('Median and STD of extinction correction')
+    #print(df.ext_u.median(), (df.ext_g.median()), (df.ext_r.median()), (df.ext_i.median()), (df.ext_z.median()))
+    #print(df.ext_u.std(), (df.ext_g.std()), (df.ext_r.std()), (df.ext_i.std()), (df.ext_z.std()))
+    #df = df[df.ext_r < 1]
+    #print(df.ext_u.median(), (df.ext_g.median()), (df.ext_r.median()), (df.ext_i.median()), (df.ext_z.median()))
+    #print(df.ext_u.std(), (df.ext_g.std()), (df.ext_r.std()), (df.ext_i.std()), (df.ext_z.std()))
+    #print(df[df.psf_r < 0])
+
+    '''
+    # Remove absolute magnitude dependence, only use differences between bands (i.e. colours)
+    df['psf_r_corr_u'] = df.psf_r_corr - df.psf_u_corr
+    df['psf_r_corr_g'] = df.psf_r_corr - df.psf_g_corr
+    df['psf_r_corr_i'] = df.psf_r_corr - df.psf_i_corr
+    df['psf_r_corr_z'] = df.psf_r_corr - df.psf_z_corr
+    df['psf_r_corr_w1'] = df.psf_r_corr - df.w1
+    df['psf_r_corr_w2'] = df.psf_r_corr - df.w2
+    df['psf_r_corr_w3'] = df.psf_r_corr - df.w3
+    df['psf_r_corr_w4'] = df.psf_r_corr - df.w4
+    '''
+    #df['gradient'] = (df.psf_u - df.psf_z)/2
+
+    #For debugging purposes, can limit size of df to <10% of the 2.5 million.
+    #df=df[0::10]
+
+    # Add new column to df, with features transformed into 1D
+    transform_features(df, feature_columns, n_components=1)
+
+    return df
+
+
+
 
 
 
@@ -478,66 +574,7 @@ def crossvalidation_hyperparms():
 
 if __name__ == "__main__": #so you can import this code and run by hand if desired
 
-    #Input data
-    df = pd.read_csv('SDSS_spec_xmwise.csv')
-    print(df['class'].value_counts())
-    print(len(df))
-    df = drop_duplicates(df)
-    print('after removing duplicate wise matches:')
-    print(df['class'].value_counts())
-    print(len(df))
-
-    #Filter the data to remove bad entires
-    df=df[(df.cmod_u>0.0) & (df.cmod_g>0.0) & (df.cmod_r>0.0) & (df.cmod_i>0.0) & (df.cmod_z>0.0)] #remove objects where cmodel flux fit has given negative value (118 entires). In practise this is the same as using psf. -9999 values present.
-    print('after removing cmod -9999s')
-    print(len(df))
-    df=df[(df.zwarning==0) | (df.zwarning==16)] # | (df.zwarning==4)] #removes 81314 objects with poor quality spectra. Spectra with zWarning equal to zero have no known problems. zWarning==16 (MANY_OUTLIERS) is only ever set in the data taken with the SDSS spectrograph, not the BOSS spectrograph (the SDSS-I, -II and SEGUE-2 surveys). If it is set, that usually indicates a high signal-to-noise spectrum or broad emission lines in a galaxy; that is, MANY_OUTLIERS only rarely signifies a real error.
-    print('after removing zwar flags')
-    print(len(df))
-    #zWarning==16 keeps 4111 objects (4113 excluding the cmod_ conditions above)
-    df=df[(df.w1<50) & (df.w2<50) & (df.w3<50) & (df.w4<50)]
-    #df=df[(df.w1<50) & (df.w2<50)]
-    print('after removing wise 9999s')
-    print(len(df))
-
-    #df now Left with 2,457,349 objects. 81432 removed.
-    print('After filtering, data frame has shape: {0}'.format(df.shape))
-    print('SDSS: \n{0}'.format(df[df.instrument=='SDSS']['class'].value_counts()))
-    print('BOSS: \n{0}'.format(df[df.instrument=='BOSS']['class'].value_counts()))
-
-    #For debugging purposes, can limit size of df to <10% of the 2.5 million.
-    #df=df[0::10]
-
-    #Create columns corrected for galactic extinction
-    df['cmod_u_corr'] = df.cmod_u - df.ext_u
-    df['cmod_g_corr'] = df.cmod_g - df.ext_g
-    df['cmod_r_corr'] = df.cmod_r - df.ext_r
-    df['cmod_i_corr'] = df.cmod_i - df.ext_i
-    df['cmod_z_corr'] = df.cmod_z - df.ext_z
-    df['psf_u_corr'] = df.psf_u - df.ext_u
-    df['psf_g_corr'] = df.psf_g - df.ext_g
-    df['psf_r_corr'] = df.psf_r - df.ext_r
-    df['psf_i_corr'] = df.psf_i - df.ext_i
-    df['psf_z_corr'] = df.psf_z - df.ext_z
-    #df['resolvedu'] = np.sqrt((df.psf_u_corr - df.cmod_u_corr)**2)
-    #df['resolvedg'] = np.sqrt((df.psf_g_corr - df.cmod_g_corr)**2)
-    df['resolvedr'] = np.sqrt((df.psf_r_corr - df.cmod_r_corr)**2)
-    #df['resolvedi'] = np.sqrt((df.psf_i_corr - df.cmod_i_corr)**2)
-    #df['resolvedz'] = np.sqrt((df.psf_z_corr - df.cmod_z_corr)**2)
-    #df_zwar4 = df[df.zwarning==4]
-    '''
-    # Remove absolute magnitude dependence, only use differences between bands (i.e. colours)
-    df['psf_r_corr_u'] = df.psf_r_corr - df.psf_u_corr
-    df['psf_r_corr_g'] = df.psf_r_corr - df.psf_g_corr
-    df['psf_r_corr_i'] = df.psf_r_corr - df.psf_i_corr
-    df['psf_r_corr_z'] = df.psf_r_corr - df.psf_z_corr
-    df['psf_r_corr_w1'] = df.psf_r_corr - df.w1
-    df['psf_r_corr_w2'] = df.psf_r_corr - df.w2
-    df['psf_r_corr_w3'] = df.psf_r_corr - df.w3
-    df['psf_r_corr_w4'] = df.psf_r_corr - df.w4
-    '''
-    #f['gradient'] = (df.psf_u - df.psf_z)/2
-
+    # define feature columns used
     # psf magnitudes
     psf = ['psf_u', 'psf_g', 'psf_r', 'psf_i', 'psf_z']
     # cmodel magnitudes
@@ -548,7 +585,6 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     cmod_ext = ['cmod_u_corr', 'cmod_g_corr', 'cmod_r_corr', 'cmod_i_corr', 'cmod_z_corr']
     # WISE magnitudes
     wise = ['w1' ,'w2', 'w3', 'w4']
-
     # All high S/N resolved bands
     #resolved_highSN = ['resolvedg','resolvedr', 'resolvedi']
     # errors in r
@@ -558,19 +594,24 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     wise_colours = ['psf_r_corr_w1','psf_r_corr_w2','psf_r_corr_w3','psf_r_corr_w4']
 
     # Select columns to be used as features (typical combinations tested, commented in/out)
-    feature_columns = psf_ext + wise + ['resolvedr']
+    feature_columns = psf + wise + ['resolvedr']
     #feature_columns = sdss_colours + wise_colours + ['resolvedr']
     #feature_columns = psf_ext + wise
     #feature_columns = psf_ext
     #feature_columns = psf_ext + ['resovled_r']
     #feature_columns = wise
 
+
+    #Input data - comment out after first run to speed up
+    '''
+    file = 'SDSS_spec_xmwise_all.csv'
+    df = load_and_clean_data(file, feature_columns)
+    save_obj(df, 'df_cleaned')
+    '''
+
+    df = load_obj('df_cleaned')
     print('features used are:')
     print(df[feature_columns].columns)
-
-    # Add new column to df, with features transformed into 1D
-    transform_features(df, feature_columns, n_components=1)
-
 
     #-------------------------------------------------
     # comment out this section once you are satisfied with hyper-parms
@@ -585,22 +626,21 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     df_s = df[df['class']=='STAR']
     df = pd.concat([df_g, df_q, df_s])
     print(df['class'].value_counts())
-
-    # Get f1score as function of training range.
+    #-------------------------------------------------
+    # Get f1score as function of training range for figure 2 in paper. This takes ~30 mins.
     train_vs_f1score(df, sampleG=True)
     train_vs_f1score(df, sampleG=False)
-
     # Results are plotted in SDSS_ML_analysis.py, since plotting is much quicker.
-    '''
+    #exit()
     #-------------------------------------------------
-
+    '''
 
     # Fix machine learning variables used for the rest of the work:
     train_percent = 0.5
     n_jobs=-1 # use max cpus available
     n_estimators = 200 # number of trees in random forest. ~ at least no_feat^2. Set this to 50 if you want quick but decent results for testing/debugging. Use 200 for paper-worthy results (small accuracy increase but takes annoyingly longer if you're testing/debugging). Algorithmic complexity of a Random forest scales linearly with n_estimators.
 
-    # fix class imbalance?
+    # test to fix class imbalance?
     #df_g = df[df['class']=='GALAXY'][0::5]
     #df_q = df[df['class']=='QSO']
     #df_s = df[df['class']=='STAR']
@@ -608,9 +648,9 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
 
     print(df['class'].value_counts())
 
+    # fit random forest. modify mag_split and mag_lim for tests on magnitude limited training
+    data_prep_dict_all = prepare_data(df, feature_columns, train_percent=train_percent, ttsplit=True, mag_split=False, mag_lim=18, ttbelow=True)
 
-    # fit random forest
-    data_prep_dict_all = prepare_data(df, feature_columns, train_percent=train_percent, ttsplit=True, mag_lim=21, mag_split=False, ttbelow=False)
     pipeline = RF_fit(data_prep_dict_all, n_estimators, n_jobs=-1)
     # apply to test dataset
     classes_pred_all = RF_classify(pipeline, data_prep_dict_all, n_jobs=-1, ttsplit=True, proba=False)
@@ -623,7 +663,7 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     # TRAINING AND VALIDATING NOW COMPLETE
     # Save data and models to disk, they are evaulated in: SDSS_ML_analysis.py
     save_obj(pipeline, 'rf_pipeline') # save pipeline to disk for classifying new sources later on:
-    save_obj(df,'df')
+    #save_obj(df,'df')
     save_obj(data_prep_dict_all, 'data_prep_dict_all')
     save_obj(classes_pred_all, 'classes_pred_all')
     save_obj(classes_pred_all_proba,'classes_pred_all_proba')
@@ -632,19 +672,17 @@ if __name__ == "__main__": #so you can import this code and run by hand if desir
     #save_obj(classes_pred_boss, 'classes_pred_boss')
     #save_obj(classes_pred_sdss, 'classes_pred_sdss')
 
-
-
-
-    #-------------------------------------------------
-    # Split data into test/train via magnitude limit
-    # re-run with various magnitude limits
-    data_prep_dict = prepare_data(df, trim_columns, train_percent=train_percent, mag_lim=20, mag_split=True, verbose=False, ttsplit=False)
-    pipeline = RF_fit(data_prep_dict, train_percent, n_estimators, n_jobs=-1)
-    classes_pred = RF_classify(pipeline, data_prep_dict)
-    #print('SDSS spectrograph objects only:')
-    metrics(data_prep_dict, classes_pred)
-    print('-'*30)
-
+    # append additional derrived quantities to the df
+    df_predclass = pd.DataFrame(classes_pred_all, index=data_prep_dict_all['features_test'].index, columns=['class_pred'])
+    # Append probabilities to the original df for test data:
+    df = df.join(df_predclass, how='left')
+    # Get probabilities from the RF classifier:
+    df_proba = pd.DataFrame(classes_pred_all_proba, index=data_prep_dict_all['features_test'].index, columns=['prob_g', 'prob_q', 'prob_s'])
+    # Append probabilities to the original df for test data:
+    df = df.join(df_proba, how='left')
+    df['prob_best'] = df[['prob_g', 'prob_q', 'prob_s']].max(axis=1)
+    #save_obj(df, 'df_classprobs') # renamed after adding file to zenodo
+    save_obj(df, 'df_spec_classprobs')
 
 
 
