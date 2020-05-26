@@ -1,7 +1,7 @@
 # SDSS-ML
 Identifying galaxies, quasars and stars with machine learning: a new catalogue of classifications for 111 million SDSS sources without spectra
 
-The paper, published in A&A: https://arxiv.org/pdf/1909.10963.pdf
+The paper, published in A&A: https://arxiv.org/abs/1909.10963
 
 Our catalogue can be found and referenced under our DOI here: https://www.doi.org/10.5281/zenodo.3459293
 
