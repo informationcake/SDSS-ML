@@ -7,6 +7,8 @@ Our catalogue can be found and referenced under our DOI here: https://www.doi.or
 
 These scripts explore galaxy/quasar/star classification from optical and infrared data using machine learning. We use SDSS Data Release 15. Interestingly, SDSS DR16 has spectroscopic observations of new quasars, which we had already identified using photometric data :)
 
+Here is a 4 slide poster summarising our research, made for the RAS Early Career Poster Exhibition: https://docs.google.com/presentation/d/1r2D9P0JuQGMk2_RhQUQAsk3vunshTjhI22T_OnPPdt4/edit?usp=sharing
+
 SDSS_ML.py
 - Cleans data, builds random forest model
 
